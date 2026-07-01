@@ -169,3 +169,47 @@ Y en las tipo R hay que ver si salta a la dirección definida en el registro en 
 
 ## Conclusiones
 Vemos que todo salta adonde tiene que saltar asi que las cuatro instrucciones de JUMP andan bien.
+
+# Caso 7
+## Descripcion:
+En este caso vamos a ver las funciones que tienen que ver con el desplazamiento de bits
+
+## Instrucciones: SLL,SRL,SRA,SLLR,SRLR,SRAR
+
+## Precondiciones
+Para desplazar vamos a necesitar un valor que desplazar nosotros vamos a usar el valor de R4 que seteamos en el caso 4 es decir 0x80008000 sabiendo que en bianario el 8 es 1000. Es importante usar este valor para ver como
+se trata  a los negativos.
+Además debemos guardar en un registro algun valor para podes hacer el desplazamiento,como para desplazar toma los bits de menos relevancia y para simplificar el movimiento vamos a cargar en un registro un simple 2 utilizando ORI. (lo haremos en el 6 y vamos a limpiar el registro previamente para no tener basura)
+Guardemos los resultados en los registros 8,9 y 10
+
+## Code
+```
+XOR 6 6 6  (00000 00110 00110 00110 00000 0 001010) 0x018C600A
+ORI 6 6 2  (00101 00110 00110 0 0000 0000 0000 0010) 0x298C0002
+SLL 0 4 8 aux:2  (00000 00000 00100 01000 00010 0 000000) 0x00088100  
+SRL 0 4 9 aux:2  (00000 00000 00100 01001 00010 0 000001) 0x00089101
+SRA 0 4 10 aux:2 (00000 00000 00100 01010 00010 0 000010) 0x0008A102
+SRA 0 5 10 aux:2 (00000 00000 00101 01010 00010 0 000010) 0x000AA102
+SLLR 6 4 8  (00000 00110 00100 01000 00000 0 000011) 0x01888003
+SRLR 6 4 9  (00000 00110 00100 01001 00000 0 000100) 0x01889004
+SRAR 6 4 10 (00000 00110 00100 01010 00000 0 000101) 0x0188A005
+SRAR 6 5 10 (00000 00110 00101 01010 00000 0 000101) 0x018AA005
+```
+
+## Postcondiciones
+Al ejecutar cada paquete de SLL ver en r si el valor del registro coincide con lo que se busca.
+
+## Conclusiones
+Al hacer SLL del valor nos dio 0x00020000,lo cual esta bien coincide con mover el bit del 8 dos lugares,lo que si el numero se volvio positivo en el mundo de los signed.
+
+Luego al hacer SRL del valor nos dio 0x20002000 lo cual tambien esta bien coincide con mover dos bits los bits del 8,lo que si otra vez el numero se volvio positivo en el mundo de los signed.
+
+Ahora al hacer SRA del valor nos dio 0xE0002000 lo cual coincide con mover los bits del 8 dos lugarse Y autocompletar con 0 los bits de MSB dependiendo cuanto nos movemos.
+
+Por lo cual entre SRA y SLL nos damos cuenta de una muy importante diferencia mientras SLL rellena los MSB nuevos con 0,SRA lo hace con 1 lo cual nos  permite mantener el signo en nuestro caso del numero negativo.
+Para ver si los 1 eran por ser negativo o era siempre probamos con el registro 5 en el cual teniamos 0x00008000 y vemos que dio 0x00002000 por lo cual esto es algo importante y nos hace concluir que el SRA siempre mantiene el signo.
+
+Podemos concluir que SRL se usaria para unsigneds y SRA para signeds
+
+Haciendo las SLLR obtuvimos los mismos resultados (esto porque usamos de R lo mismo que habiamos usado aux) asi que concluimos que los Shift funcionan bien en el procesador.
+
