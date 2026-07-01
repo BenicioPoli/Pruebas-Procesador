@@ -15,7 +15,7 @@ Los registros que usarmeos para guardar los valores seran  4 y 5 para guardar lo
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
-LUI 4 10000.. (11001 00000 00100 0 1000 0000 0000 0000) 0xC8088000 
+LUI 4 10000.. (11001 00000 00100 0 1000 0000 0000 0000) 0xC8088000
 ORI 5 5 100.. (00101 00101 00101 0 1000 0000 0000 0000) 0x294A8000
 ADD 4 5 8 (00000 00100 00101 01000 00000 0 011100) 0x010A801C
 SUB 4 5 8 (00000 00100 00101 01000 00000 0 011101) 0x010A801D
@@ -96,3 +96,24 @@ Si funciono en este caso se ve en la consola porque nos va a decir que saltamos 
 ## Conclusiones
 Vemos como se calcula el salto,vemos que esta saltando 40 cada vez que debe,salta 40 debido a como el procesador calcula el salto,ya que este lo calculo agregandole a la imm 13 bits a la izquierda y 2 bits a la derecha (en este caso todos 0) entonces nuestra F queda como 111100. Otra cosa que se nota es que esta F aporta 0x40 porque si en vez de poner 0x000F de offset ponemos 0x0008 el PC salta 0x0C entonces ese es el salto minimo que permite este RTM32 (que es el salto de toda la vida cuando escribimos en el RTM)
 Otra conclusion que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza en 1 es negativo por lo que es < que el que empieza en 0.
+
+# Caso 4:
+## Descripcion:
+Hacer las operaciones booleanas entre los registros
+
+## Instrucciones: AND,OR,NOR
+
+## Precondiciones:
+Vamos a usar los mismos registros 4 y 5 del caso 1 pero le vamos a añadir al registro 4 un 1 en el mismo bit que tiene un uno el 5 esto para poder probar el add mejor,para esto vamos a usar un ORI en el que usamos el LUI.
+
+## Code:
+ORI 4 4 100.. (00101 00100 00100 0 1000 0000 0000 0000) 0x29088000
+AND 4 5 8 (00000 00100 00101 01000  00000 0 001000) 0x010A8008
+OR 4 5 8  (00000 00100 00101 01000  00000 0 001001) 0x010A8009
+NOR 4 5 8 (00000 00100 00101 01000  00000 0 001011) 0x010A800B
+
+## Postcondiciones:
+Vemos que el codigo funciono el and devuelve lo que esta almacenado en el registro 5 el or devuelve el registro 4 completo y el nor devuelve 0x7FFF7FFF que es lo que corresponde que mande
+
+## Conclusiones:
+Se pueden realizar correctamente operaciones booleanas en el procesador
