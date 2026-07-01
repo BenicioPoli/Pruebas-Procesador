@@ -92,7 +92,7 @@ Si funciono en este caso se ve en la consola porque nos va a decir que saltamos 
 
 ## Conclusiones
 Vemos como se calcula el salto,vemos que esta saltando 40 cada vez que debe,salta 40 debido a como el procesador calcula el salto,ya que este lo calculo agregandole a la imm 13 bits a la izquierda y 2 bits a la derecha (en este caso todos 0) entonces nuestra F queda como 111100. Otra cosa que se nota es que esta F aporta 0x40 porque si en vez de poner 0x000F de offset ponemos 0x0008 el PC salta 0x0C entonces ese es el salto minimo que permite este RTM32 (que es el salto de toda la vida cuando escribimos en el RTM)
-Otra conclusion que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza en 1 es negativo por lo que es < que el que empieza en 0.
+Otra conclusion que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza con MSB en 1  es negativo por lo que es < que el que empieza en 0.
 
 # Caso 4:
 ## Descripcion:
@@ -119,21 +119,53 @@ Se pueden realizar correctamente operaciones booleanas en el procesador
 
 # Caso 5
 ## Descripcion: 
-Ver si dos Registros son menores y como cambia en signed y unsigned
+Ver si dos Registros son menores y como cambia en signed y unsigned en estas comparaciones,tambien probar lo mismo con imms
 
-## Instrucciones: SLT,SLTU
+## Instrucciones: SLT,SLTU,SLTI,SLTIU
 
 ## Precondiciones
-Utilizaremos los registros del caso 1, que los tomaremos como seteados previamente
+Utilizaremos los registros del caso 1, que los tomaremos como seteados previamente,y para hacer la comparacion con los imm utilizaremos el registro 4 por tener un contenido negativo
+Utilizaremos para guardar los valores los registros 8 y 9 utilizamos dos para poder comparar en cada caso el signed con el unsigned.
+Vamos a comparar es las tipo I con una imagen cero para hacer más facil el analisis.
 
 ## Code
+```
 SLT 4 5 8 (00000 00100 00101 01000 000000 001100) 0x010A800C
-SLTU 4 5 8 (00000 00100 00101 01001 000000 001101) 0x010A900D
+SLTU 4 5 9 (00000 00100 00101 01001 000000 001101) 0x010A900D
+SLTI 4 8 0 (10110 00100 01000 0 00000..000) 0xB1100000 
+SLTIU 4 8 0  (10111 00100 01001 0 00000..000) 0xB9120000
+```
 
 ## Postcondiciones
-Vemos en los registors que valor se pone si 1 o 0
+Vemos con el comando r al ejecutar cada instruccion si el registro  8 o 9 se pusieron en 1 o 0
 
 ## Conclusiones
-Vemos que anda bien ya que en el caso de SLT devuelve un 1 que esta bien porque 4 es menor pero en el caso del unsigned devuelve 0 porque el registro 4 se vuelve positivo y es mayor
+Vemos que anda bien ya que en el caso de SLT devuelve un 1 que esta bien porque 4 es menor pero en el caso del unsigned devuelve 0 porque el registro 4 se vuelve positivo y es mayor.
+Lo mismo con las tipo I al comparar con la imagen 0 el registro 4 en signed devuelve 1 porque R4 tiene un valor negativo ahora si hacemos unsigned el R4 pasa a tener un valor positivo gigante por lo que se devuelve 0.
 
+# Caso 6
+## Descripcion:
+Vamos a probar si las cuatro instrucciones de JUMP andan correctamente y el pc salta donde debe saltar.
 
+## Instrucciones: J,JAL,JR,JALR
+
+## Precondiciones
+En este caso no hay ninguna precondición exigida sin embargo se prefiere empezar con el pc en 0,en las tipo J,para una mejor visualización
+Para los J tipo R nosotros usaremos el registro 0 que se encuentra vacio (estos saltos de las tipo R si se recomienda empezarlas en pc 0x08 o en otro numero que no sea 0)
+
+Aclaración: ej JALR podemos guardar donde queramos el salto que se iba a realizar naturalmente nosotros lo guardamos en 31 para tener igual analisis que con JAL.
+## Code
+```
+J 0x02 (00010 0...0010) 0x10000002
+JAL 0x02 (00011 0...0010) 0x18000002
+JR 0 (00000 00000 00000 00000 0 00000 001110) 0x0000000E
+JALR 0 (00000 00000 00000 11111 0 00000 001111) 0x0001F00F
+```
+
+## Postcondiciones
+Para ver si las tipo J funcionaron hay que ver si salta adonde debe,con ese salto que pusimos el pc debe saltar 8 posiciones (esto debido a que el salto se forma con el valor ingresado + en los 3 MSB los del pc actual + en la 2 LSB 0) entonces 1000 es 8 por lo que empezando en 0 el pc debera saltar a 0x8 en vez de a 0x4 como hace habitualmente.
+Y además al ejecutar los JAL se debe poder ver con r que el R[31] guarde en este caso un 4 que es el pc adonde iria sin el salto.
+Y en las tipo R hay que ver si salta a la dirección definida en el registro en este caso 0 y si en R[31]  se guarda el pc + 4 en el caso del JALR
+
+## Conclusiones
+Vemos que todo salta adonde tiene que saltar asi que las cuatro instrucciones de JUMP andan bien.
