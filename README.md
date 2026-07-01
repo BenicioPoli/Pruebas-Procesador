@@ -63,11 +63,36 @@ XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 ADDI 4 4 0xFF01 (11000 00100 00100 1 1111111100000001) 0xC109FF01 (dirección de lectura del serial)
 LB 4 8 0 (01110 00100 01000 0 00000000..00) 0x71100000 (por ahora no anda)
 ```
-# Postcondiciones
+## Postcondiciones
 Para ir controlando otra vez vemos los registros y para ver la h se mando correctamente vemos el picocom.
 
-# Conclusiones
+## Conclusiones
 Vimos la comunicación con la interface serie y vemos que funciona bien tanto para lectura como para escritura.
 
+# Caso 3
 
+## Descripcion
+En este caso veremos todos los branch if a ver si salta cuando corresponde utilizando los registros del caso 1
 
+## Instrucciones: BEQ,BNE,BLT,BGT,BLE,BGE
+
+## Precondiciones
+Utilizaremos los registros del Caso 1 los cuales asumimos como cargados previamente.
+Para que se note el salto utilizaremos un salto de 0x000F
+
+## Code:
+```
+BEQ 4 5 0x000F (10000 00100 00101 0 000...1111) 0x810A000F
+BNE 4 5 0x000F (10001 00100 00101 0 000...1111) 0x890A000F
+BLT 4 5 0x000F (10010 00100 00101 0 000...1111) 0x910A000F
+BGT 4 5 0x000F (10011 00100 00101 0 000...1111) 0x990A000F
+BLE 4 5 0x000F (10100 00100 00101 0 000...1111) 0xA10A000F
+BGE 4 5 0x000F (10101 00100 00101 0 000...1111) 0xA90A000F
+```
+
+## Postcondiciones:
+Si funciono en este caso se ve en la consola porque nos va a decir que saltamos al pc tanto y si vemos que avanzamos un pc nada más es que no aplicaba el salto.
+
+## Conclusiones
+Vemos como se calcula el salto,vemos que esta saltando 40 cada vez que debe,salta 40 debido a como el procesador calcula el salto,ya que este lo calculo agregandole a la imm 13 bits a la izquierda y 2 bits a la derecha (en este caso todos 0) entonces nuestra F queda como 111100. Otra cosa que se nota es que esta F aporta 0x40 porque si en vez de poner 0x000F de offset ponemos 0x0008 el PC salta 0x0C entonces ese es el salto minimo que permite este RTM32 (que es el salto de toda la vida cuando escribimos en el RTM)
+Otra conclusion que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza en 1 es negativo por lo que es < que el que empieza en 0.
