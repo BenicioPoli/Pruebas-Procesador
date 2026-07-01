@@ -40,9 +40,9 @@ Vimos que el resto no da basura da 0 como debe dar en nuestro caso
 # Caso 2
 
 ## Descripcion
-En este caso vamos a intentar mandar una letra h a la pantalla y que sea leida por otro registro.
+En este caso vamos a intentar mandar una letra h a la pantalla.
 
-## Instrucciones: ADDI,LB,SB
+## Instrucciones: ADDI,SB
 
 ## Precondiciones
 Otra vez haremos que los registros esten en 0 antes de aplicarles cualquier cosa y cargaremos la h en un registro y la direccion del serial de la pantalla 0xFFFFFF00 en otro registro.
@@ -50,7 +50,7 @@ Para variar ingresaremos con ADDI los valores en vez de usar ORI y LUI.
 Para ADDI necesitamos mas que nunca que el registro este vacio para hacer 0 + el valor que queremos.
 ADDI sirve para 16 bits que para h los alcanzan,pero para la direccion del puerto el problema se soluciona facil debido a que el bit 17 (el de significancia posterior a imm) se pone como 1 o 0 significando este si es negativo o positivo el registro para lo cual va a rellenar con 1 si se poene como 1 el bit y con 0 si se pone como 0.
 
-Usaremos los registros 4 y 5 para guardar la dirección del serie y la h y luego el registro 8 para leer el valor.
+Usaremos los registros 4 y 5 para guardar la dirección del serie y la h.
 
 ## Code:
 ```
@@ -59,15 +59,12 @@ XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
 ADDI 4 4 0xFF00 (11000 00100 00100 1 1111111100000000) 0xC109FF00
 ADDI 5 5 0x0068 (11000 00101 00101 0 0000000001000100) 0xC14A0068
 SB 4 5 0 (01011 00100 00101 0 00000000..00) 0x590A0000
-XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
-ADDI 4 4 0xFF01 (11000 00100 00100 1 1111111100000001) 0xC109FF01 (dirección de lectura del serial)
-LB 4 8 0 (01110 00100 01000 0 00000000..00) 0x71100000 (por ahora no anda)
 ```
 ## Postcondiciones
 Para ir controlando otra vez vemos los registros y para ver la h se mando correctamente vemos el picocom.
 
 ## Conclusiones
-Vimos la comunicación con la interface serie y vemos que funciona bien tanto para lectura como para escritura.
+Vimos la comunicación con la interface serie y vemos que funciona bien.
 
 # Caso 3
 
@@ -107,13 +104,36 @@ Hacer las operaciones booleanas entre los registros
 Vamos a usar los mismos registros 4 y 5 del caso 1 pero le vamos a añadir al registro 4 un 1 en el mismo bit que tiene un uno el 5 esto para poder probar el add mejor,para esto vamos a usar un ORI en el que usamos el LUI.
 
 ## Code:
+```
 ORI 4 4 100.. (00101 00100 00100 0 1000 0000 0000 0000) 0x29088000
 AND 4 5 8 (00000 00100 00101 01000  00000 0 001000) 0x010A8008
 OR 4 5 8  (00000 00100 00101 01000  00000 0 001001) 0x010A8009
 NOR 4 5 8 (00000 00100 00101 01000  00000 0 001011) 0x010A800B
+```
 
 ## Postcondiciones:
 Vemos que el codigo funciono el and devuelve lo que esta almacenado en el registro 5 el or devuelve el registro 4 completo y el nor devuelve 0x7FFF7FFF que es lo que corresponde que mande
 
 ## Conclusiones:
 Se pueden realizar correctamente operaciones booleanas en el procesador
+
+# Caso 5
+## Descripcion: 
+Ver si dos Registros son menores y como cambia en signed y unsigned
+
+## Instrucciones: SLT,SLTU
+
+## Precondiciones
+Utilizaremos los registros del caso 1, que los tomaremos como seteados previamente
+
+## Code
+SLT 4 5 8 (00000 00100 00101 01000 000000 001100) 0x010A800C
+SLTU 4 5 8 (00000 00100 00101 01001 000000 001101) 0x010A900D
+
+## Postcondiciones
+Vemos en los registors que valor se pone si 1 o 0
+
+## Conclusiones
+Vemos que anda bien ya que en el caso de SLT devuelve un 1 que esta bien porque 4 es menor pero en el caso del unsigned devuelve 0 porque el registro 4 se vuelve positivo y es mayor
+
+
