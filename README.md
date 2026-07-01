@@ -3,7 +3,8 @@
 # Caso 1
 ## Descripcion:
 Realizar las Cuatro Operaciones basicas entre dos registros y diferenciar los casos unsigned y signed
-## Instrucciones: XOR,LUI,ORI,ADD,SUB,MUL,DIV
+
+## Instrucciones: XOR,LUI,ORI,ADD,SUB,MUL,MULH,MULHU,DIV,DIVU,REST,RESTU
 
 ## Precondiciones:
 Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LUI y ORI (osea un registro tendra un valor significativamente mas grande que el otro)
@@ -35,3 +36,38 @@ Vemos que las instrucciones anduvieron de 10 y que en SUB al producirse un overf
 Vemos tambien que por como se calcula la multiplicacion binaria el procesador se puede ahorrar tener un MULU ya que la parte baja no variara entre signed y unsigned.
 Vemos el funcionamiento de unsigned y signed por ejemplo en la misma multiplicación donde al poner unsigned la parte mayor da 0x00004000 contra los 0xFFFFC000 queda al usar signed,esto tambien se ve en la division donde nos da 0xFFFF0000 en el signed y 0x0001000 en el unsigned.
 Vimos que el resto no da basura da 0 como debe dar en nuestro caso
+
+# Caso 2
+
+## Descripcion
+En este caso vamos a intentar mandar una letra h a la pantalla y que sea leida por otro registro.
+
+## Instrucciones: ADDI,LB,SB
+
+## Precondiciones
+Otra vez haremos que los registros esten en 0 antes de aplicarles cualquier cosa y cargaremos la h en un registro y la direccion del serial de la pantalla 0xFFFFFF00 en otro registro.
+Para variar ingresaremos con ADDI los valores en vez de usar ORI y LUI.
+Para ADDI necesitamos mas que nunca que el registro este vacio para hacer 0 + el valor que queremos.
+ADDI sirve para 16 bits que para h los alcanzan,pero para la direccion del puerto el problema se soluciona facil debido a que el bit 17 (el de significancia posterior a imm) se pone como 1 o 0 significando este si es negativo o positivo el registro para lo cual va a rellenar con 1 si se poene como 1 el bit y con 0 si se pone como 0.
+
+Usaremos los registros 4 y 5 para guardar la dirección del serie y la h y luego el registro 8 para leer el valor.
+
+## Code:
+```
+XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
+XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
+ADDI 4 4 0xFF00 (11000 00100 00100 1 1111111100000000) 0xC109FF00
+ADDI 5 5 0x0068 (11000 00101 00101 0 0000000001000100) 0xC14A0068
+SB 4 5 0 (01011 00100 00101 0 00000000..00) 0x590A0000
+XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
+ADDI 4 4 0xFF01 (11000 00100 00100 1 1111111100000001) 0xC109FF01 (dirección de lectura del serial)
+LB 4 8 0 (01110 00100 01000 0 00000000..00) 0x71100000 (por ahora no anda)
+```
+# Postcondiciones
+Para ir controlando otra vez vemos los registros y para ver la h se mando correctamente vemos el picocom.
+
+# Conclusiones
+Vimos la comunicación con la interface serie y vemos que funciona bien tanto para lectura como para escritura.
+
+
+
