@@ -1,17 +1,18 @@
 # Pruebas-Procesador
 
 # Caso 1
-## Descripcion:
-Realizar las Cuatro Operaciones basicas entre dos registros y diferenciar los casos unsigned y signed
+## Descripción
+Realizar las Cuatro Operaciones basicas entre dos registros y diferenciar los casos unsigned y signed.
 
 ## Instrucciones: XOR,LUI,ORI,ADD,SUB,MUL,MULH,MULHU,DIV,DIVU,REST,RESTU
 
-## Precondiciones:
+## Precondiciones
 Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LUI y ORI (osea un registro tendra un valor significativamente mas grande que el otro)
 Además antes del LUI y ORI haremos un xor de los registros con si mismos para asegurarnos que no tengan basura.
-Los registros que usarmeos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos(estos valores los volveremos a utilizar en proximos casos),y usaremos 8 para el resultado de las funciones y ver si andan.(y tambien usaremos 9 en las operaciones en las que necesiemos de dos registros)
-(nosotros pondremos siempre el resultado de las operaciones en el mismo registro para simplificar lo que va a ocasionar que se vaya sobre escribiendo por lo que habra que ir viendo r al poner cada instrucción)
-## Code:
+Los registros que usarmeos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos(estos valores los volveremos a utilizar en proximos casos),y usaremos 8 para el resultado de las funciones y ver si andan.(y tambien usaremos 9 en las operaciones en las que necesiemos de dos registros).
+(nosotros pondremos siempre el resultado de las operaciones en el mismo registro para simplificar lo que va a ocasionar que se vaya sobre escribiendo por lo que habra que ir viendo r al poner cada instrucción).
+
+## Code
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
@@ -28,18 +29,18 @@ DIVU 4 5 8 (00000 00100 00101 01000 00000 0 011001) 0x010A8019
 RESTU 4 5 9 (00000 00100 00101 01001 00000 0 011011) 0x010A901B
 ```
 
-## PostCondiciones
-Para ir controlando si el codigo esta funcionando vamos poniendo r a ver si los registros se actualizaron ademas vemos en la consola del procesador si tomo bien la instruccion entre otras cosas
+## Postcondiciones
+Para ir controlando si el codigo esta funcionando vamos poniendo r a ver si los registros se actualizaron ademas vemos en la consola del procesador si tomo bien la instruccion entre otras cosas.
 
 ## Conclusiones
 Vemos que las instrucciones anduvieron de 10 y que en SUB al producirse un overflow el procesador maneja este overflow apagando el bit de signo (el MSB) por lo cual el numero es interpretado en forma erronea culpa del desbordamiento.
 Vemos tambien que por como se calcula la multiplicacion binaria el procesador se puede ahorrar tener un MULU ya que la parte baja no variara entre signed y unsigned.
 Vemos el funcionamiento de unsigned y signed por ejemplo en la misma multiplicación donde al poner unsigned la parte mayor da 0x00004000 contra los 0xFFFFC000 queda al usar signed,esto tambien se ve en la division donde nos da 0xFFFF0000 en el signed y 0x0001000 en el unsigned.
-Vimos que el resto no da basura da 0 como debe dar en nuestro caso
+Vimos que el resto no da basura da 0 como debe dar en nuestro caso.
 
 # Caso 2
 
-## Descripcion
+## Descripción
 En este caso vamos a intentar mandar una letra h a la pantalla.
 
 ## Instrucciones: ADDI,SB
@@ -52,7 +53,7 @@ ADDI sirve para 16 bits que para h los alcanzan,pero para la direccion del puert
 
 Usaremos los registros 4 y 5 para guardar la dirección del serie y la h.
 
-## Code:
+## Code
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
@@ -68,16 +69,16 @@ Vimos la comunicación con la interface serie y vemos que funciona bien.
 
 # Caso 3
 
-## Descripcion
-En este caso veremos todos los branch if a ver si salta cuando corresponde utilizando los registros del caso 1
+## Descripción
+En este caso veremos todos los branch if a ver si salta cuando corresponde utilizando los registros del caso 1.
 
 ## Instrucciones: BEQ,BNE,BLT,BGT,BLE,BGE
 
 ## Precondiciones
 Utilizaremos los registros del Caso 1 los cuales asumimos como cargados previamente.
-Para que se note el salto utilizaremos un salto de 0x000F
+Para que se note el salto utilizaremos un salto de 0x000F.
 
-## Code:
+## Code
 ```
 BEQ 4 5 0x000F (10000 00100 00101 0 000...1111) 0x810A000F
 BNE 4 5 0x000F (10001 00100 00101 0 000...1111) 0x890A000F
@@ -87,23 +88,23 @@ BLE 4 5 0x000F (10100 00100 00101 0 000...1111) 0xA10A000F
 BGE 4 5 0x000F (10101 00100 00101 0 000...1111) 0xA90A000F
 ```
 
-## Postcondiciones:
+## Postcondiciones
 Si funciono en este caso se ve en la consola porque nos va a decir que saltamos al pc tanto y si vemos que avanzamos un pc nada más es que no aplicaba el salto.
 
 ## Conclusiones
-Vemos como se calcula el salto,vemos que esta saltando 40 cada vez que debe,salta 40 debido a como el procesador calcula el salto,ya que este lo calculo agregandole a la imm 13 bits a la izquierda y 2 bits a la derecha (en este caso todos 0) entonces nuestra F queda como 111100. Otra cosa que se nota es que esta F aporta 0x40 porque si en vez de poner 0x000F de offset ponemos 0x0008 el PC salta 0x0C entonces ese es el salto minimo que permite este RTM32 (que es el salto de toda la vida cuando escribimos en el RTM)
+Vemos como se calcula el salto,vemos que esta saltando 40 cada vez que debe,salta 40 debido a como el procesador calcula el salto,ya que este lo calculo agregandole a la imm 13 bits a la izquierda y 2 bits a la derecha (en este caso todos 0) entonces nuestra F queda como 111100. Otra cosa que se nota es que esta F aporta 0x40 porque si en vez de poner 0x000F de offset ponemos 0x0008 el PC salta 0x0C entonces ese es el salto minimo que permite este RTM32 (que es el salto de toda la vida cuando escribimos en el RTM).
 Otra conclusion que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza con MSB en 1  es negativo por lo que es < que el que empieza en 0.
 
 # Caso 4:
-## Descripcion:
-Hacer las operaciones booleanas entre los registros
+## Descripción
+Hacer las operaciones booleanas entre los registros.
 
 ## Instrucciones: AND,OR,NOR
 
-## Precondiciones:
+## Precondiciones
 Vamos a usar los mismos registros 4 y 5 del caso 1 pero le vamos a añadir al registro 4 un 1 en el mismo bit que tiene un uno el 5 esto para poder probar el add mejor,para esto vamos a usar un ORI en el que usamos el LUI.
 
-## Code:
+## Code
 ```
 ORI 4 4 100.. (00101 00100 00100 0 1000 0000 0000 0000) 0x29088000
 AND 4 5 8 (00000 00100 00101 01000  00000 0 001000) 0x010A8008
@@ -111,20 +112,20 @@ OR 4 5 8  (00000 00100 00101 01000  00000 0 001001) 0x010A8009
 NOR 4 5 8 (00000 00100 00101 01000  00000 0 001011) 0x010A800B
 ```
 
-## Postcondiciones:
-Vemos que el codigo funciono el and devuelve lo que esta almacenado en el registro 5 el or devuelve el registro 4 completo y el nor devuelve 0x7FFF7FFF que es lo que corresponde que mande
+## Postcondiciones
+Vemos que el codigo funciono el and devuelve lo que esta almacenado en el registro 5 el or devuelve el registro 4 completo y el nor devuelve 0x7FFF7FFF que es lo que corresponde que mande.
 
-## Conclusiones:
-Se pueden realizar correctamente operaciones booleanas en el procesador
+## Conclusiones
+Se pueden realizar correctamente operaciones booleanas en el procesador.
 
 # Caso 5
-## Descripcion: 
-Ver si dos Registros son menores y como cambia en signed y unsigned en estas comparaciones,tambien probar lo mismo con imms
+## Descripción
+Ver si dos Registros son menores y como cambia en signed y unsigned en estas comparaciones,tambien probar lo mismo con imms.
 
 ## Instrucciones: SLT,SLTU,SLTI,SLTIU
 
 ## Precondiciones
-Utilizaremos los registros del caso 1, que los tomaremos como seteados previamente,y para hacer la comparacion con los imm utilizaremos el registro 4 por tener un contenido negativo
+Utilizaremos los registros del caso 1, que los tomaremos como seteados previamente,y para hacer la comparacion con los imm utilizaremos el registro 4 por tener un contenido negativo.
 Utilizaremos para guardar los valores los registros 8 y 9 utilizamos dos para poder comparar en cada caso el signed con el unsigned.
 Vamos a comparar es las tipo I con una imagen cero para hacer más facil el analisis.
 
@@ -137,21 +138,21 @@ SLTIU 4 8 0  (10111 00100 01001 0 00000..000) 0xB9120000
 ```
 
 ## Postcondiciones
-Vemos con el comando r al ejecutar cada instruccion si el registro  8 o 9 se pusieron en 1 o 0
+Vemos con el comando r al ejecutar cada instruccion si el registro  8 o 9 se pusieron en 1 o 0.
 
 ## Conclusiones
 Vemos que anda bien ya que en el caso de SLT devuelve un 1 que esta bien porque 4 es menor pero en el caso del unsigned devuelve 0 porque el registro 4 se vuelve positivo y es mayor.
 Lo mismo con las tipo I al comparar con la imagen 0 el registro 4 en signed devuelve 1 porque R4 tiene un valor negativo ahora si hacemos unsigned el R4 pasa a tener un valor positivo gigante por lo que se devuelve 0.
 
 # Caso 6
-## Descripcion:
+## Descripción
 Vamos a probar si las cuatro instrucciones de JUMP andan correctamente y el pc salta donde debe saltar.
 
 ## Instrucciones: J,JAL,JR,JALR
 
 ## Precondiciones
-En este caso no hay ninguna precondición exigida sin embargo se prefiere empezar con el pc en 0,en las tipo J,para una mejor visualización
-Para los J tipo R nosotros usaremos el registro 0 que se encuentra vacio (estos saltos de las tipo R si se recomienda empezarlas en pc 0x08 o en otro numero que no sea 0)
+En este caso no hay ninguna precondición exigida sin embargo se prefiere empezar con el pc en 0,en las tipo J,para una mejor visualización.
+Para los J tipo R nosotros usaremos el registro 0 que se encuentra vacio (estos saltos de las tipo R si se recomienda empezarlas en pc 0x08 o en otro numero que no sea 0).
 
 Aclaración: ej JALR podemos guardar donde queramos el salto que se iba a realizar naturalmente nosotros lo guardamos en 31 para tener igual analisis que con JAL.
 ## Code
@@ -171,16 +172,16 @@ Y en las tipo R hay que ver si salta a la dirección definida en el registro en 
 Vemos que todo salta adonde tiene que saltar asi que las cuatro instrucciones de JUMP andan bien.
 
 # Caso 7
-## Descripcion:
-En este caso vamos a ver las funciones que tienen que ver con el desplazamiento de bits
+## Descripción
+En este caso vamos a ver las funciones que tienen que ver con el desplazamiento de bits.
 
 ## Instrucciones: SLL,SRL,SRA,SLLR,SRLR,SRAR
 
 ## Precondiciones
 Para desplazar vamos a necesitar un valor que desplazar nosotros vamos a usar el valor de R4 que seteamos en el caso 4 es decir 0x80008000 sabiendo que en bianario el 8 es 1000. Es importante usar este valor para ver como
 se trata  a los negativos.
-Además debemos guardar en un registro algun valor para podes hacer el desplazamiento,como para desplazar toma los bits de menos relevancia y para simplificar el movimiento vamos a cargar en un registro un simple 2 utilizando ORI. (lo haremos en el 6 y vamos a limpiar el registro previamente para no tener basura)
-Guardemos los resultados en los registros 8,9 y 10
+Además debemos guardar en un registro algun valor para podes hacer el desplazamiento,como para desplazar toma los bits de menos relevancia y para simplificar el movimiento vamos a cargar en un registro un simple 2 utilizando ORI. (lo haremos en el 6 y vamos a limpiar el registro previamente para no tener basura).
+Guardaremos los resultados en los registros 8,9 y 10.
 
 ## Code
 ```
@@ -209,18 +210,19 @@ Ahora al hacer SRA del valor nos dio 0xE0002000 lo cual coincide con mover los b
 Por lo cual entre SRA y SLL nos damos cuenta de una muy importante diferencia mientras SLL rellena los MSB nuevos con 0,SRA lo hace con 1 lo cual nos  permite mantener el signo en nuestro caso del numero negativo.
 Para ver si los 1 eran por ser negativo o era siempre probamos con el registro 5 en el cual teniamos 0x00008000 y vemos que dio 0x00002000 por lo cual esto es algo importante y nos hace concluir que el SRA siempre mantiene el signo.
 
-Podemos concluir que SRL se usaria para unsigneds y SRA para signeds
+Podemos concluir que SRL se usaria para unsigneds y SRA para signeds.
 
 Haciendo las SLLR obtuvimos los mismos resultados (esto porque usamos de R lo mismo que habiamos usado aux) asi que concluimos que los Shift funcionan bien en el procesador.
 
 # Caso 8
-## Descripcion: Vamos a probar subir cosas a memoria y cargarlas en otro registro
+## Descripción: 
+Vamos a probar subir cosas a memoria y cargarlas en otro registro.
 
 ## Instrucciones: SW,LW,SH,LH,LHU,SB,LB,LBU
 
 ## Precondiciones:
-Vamos a usar la direccion de memoria 0x010 y vamos a asumir que estamos en una estructura de 4kb
-Vamos a usar para cargar un registro que tiene un 1 en el MSB un 1 en el LSB y un 1 a la mitad,este registro lo vamos a formar con el Lui del caso 1 y con un ORI esto en el registro 4,este registro lo cargaremos en memoria de distintas formas y luego para sacarlo usaremos los registros 8 y 9,y vamos a usar el registro source 0 para que la direccion sea unicamente el offset (asumimos 0 como limpio)
+Vamos a usar la direccion de memoria 0x010 y vamos a asumir que estamos en una estructura de 4kb.
+Vamos a usar para cargar un registro que tiene un 1 en el MSB un 1 en el LSB y un 1 a la mitad,este registro lo vamos a formar con el Lui del caso 1 y con un ORI esto en el registro 4,este registro lo cargaremos en memoria de distintas formas y luego para sacarlo usaremos los registros 8 y 9,y vamos a usar el registro source 0 para que la direccion sea unicamente el offset (asumimos 0 como limpio).
 
 ## Code
 ```
@@ -237,7 +239,7 @@ LBU 0 9 0x10 (01111 00000 01001 0 0000...010000) 0x78120010
 ```
 
 ## Postcondiciones
-Verificar en los registros si se guardo el valor correctamente.Y tambien ver en la consolita si se ejecutaron los comandos correctos
+Verificar en los registros si se guardo el valor correctamente.Y tambien ver en la consolita si se ejecutaron los comandos correctos.
 
 
 ## Conclusiones
@@ -249,7 +251,7 @@ Vemos que en LB,LBU carga el mismo valor en los registros 0x01 esto es porque si
 
 # Caso 9
 
-## Descripcion:
+## Descripción:
 En este caso vamos a seguir probando la descarga en memoria pero a traves de los Loade indexed.
 
 ## Instrucciones: LHX,LHUX,LBX,LBUX,LWX
@@ -275,7 +277,7 @@ LBUX 0 9 5 (00000 00000 01001 00101 00000 0 010011) 0x00125013
 ```
 
 ## Postcondiciones
-Verificar en los registros si se guardo el valor correctamente. Y tambien ver en la consolita si se ejecutaron los comandos correctos
+Verificar en los registros si se guardo el valor correctamente. Y tambien ver en la consolita si se ejecutaron los comandos correctos.
 
 ## Conclusiones
 Al ejecutar LWX nos queda R8 = R4 por lo que funciona bien.
@@ -284,13 +286,13 @@ Al ejecutar LBX y LBUX nos carga el mismo valor que es un simple 0x01 en hexa po
 
 # Caso 10
 
-## Descripcion: 
-En este caso vamos a hacer una prueba adicional sobre LBX y LB debido a que antes lo probamos unicamente con positivos vamos a ver si a los negativos los trata bien
+## Descripción
+En este caso vamos a hacer una prueba adicional sobre LBX y LB debido a que antes lo probamos unicamente con positivos vamos a ver si a los negativos los trata bien.
 
 ## Instrucciones: LB,LBX
 
 ## Precondiciones
-Para esta prueba vamos a usar el mismo R5 del caso anterior y vamos a cargar en R4 con un ORI un 0x80 (esto sobre el valor que ya tiene R4 es decir no lo limpiamos previamente)
+Para esta prueba vamos a usar el mismo R5 del caso anterior y vamos a cargar en R4 con un ORI un 0x80 (esto sobre el valor que ya tiene R4 es decir no lo limpiamos previamente).
 
 ## Code
 ```
@@ -301,8 +303,40 @@ LBX 0 9 5 (00000 00000 01001 00101 00000 0 010010) 0x00125012
 ```
 
 ## Postcondiciones
-Verificamos valores de los registros
+Verificamos valores de los registros.
 
 ## Conclusiones
 Vemos que ambas instrucciones devuelven lo mismo 0x81 autocompletado con F lo que seria el valor de los 8 LSB de R4 autocompletado con 1 por ser negativo,por lo que confirmamos que LB y LBX detectan bien ambos signos.
+
+# Caso 11
+
+## Descripción
+En este caso vamos a probar las operaciones booleanas de tipo L.
+
+## Precondiciones
+Para esta prueba vamos a setear el R4 en 0xF000F0F0 y usaremos de imm distintos dependiendo de las operaciones. Los resultados los guardaremos en el R8
+
+## Code
+```
+ANDI  4 8 0xF000 (00100 00100 01000 0 1111 0000 0000 0000) 0x2110F000
+ANDIH 4 9 0xF000 (00100 00100 01001 1 1111 0000 0000 0000) 0x2113F000
+ORI   4 8 0xF00F (00101 00100 01000 0 1111 0000 0000 1111) 0x2910F00F
+ORIH  4 9 0xF00F (00101 00100 01001 1 1111 0000 0000 1111) 0x2913F00F
+XORI  4 9 0xF000 (00110 00100 01000 0 1111 0000 0000 0000) 0x3110F000
+XORIH 4 9 0xF000 (00110 00100 01001 1 1111 0000 0000 0000) 0x3113F000
+```
+
+## Postcondiciones
+Analizamos con r los registros luego de cada instrucción a ver si su valor condice con la operación realizada.
+
+## Conclusiones
+Vemos que los AND funcionan correctamente ya que nos devolvierón tanto en ANDI como ANDIH la F donde correspondia (en ANDI nos devolvieron la F de la posición 5 hexa y en ANDIH la de la posición 1).
+
+Vemos con los OR también funcionan ya que salen todas las F del hexa de R4 + una F adicional,en el caso de ORI esta aparece en el hexa de menor relevancia y en el caso de ORIH aparece en el cuarto hexa de mayor relevancia (por lo que respeta el bit de h la instrucción).
+
+Además los XOR funcionan debido a que elimina una F en la operación en XOR elimina la F que esta en la posicion 5 hexa y en XORI la primera (debido a que XOR elimina lugares donde hay dos 1),por lo cual la instrucción tiene el comportamiento esperado y detecta la h.
+
+
+
+
 
