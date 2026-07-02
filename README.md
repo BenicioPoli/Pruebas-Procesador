@@ -237,7 +237,8 @@ LBU 0 9 0x10 (01111 00000 01001 0 0000...010000) 0x78120010
 ```
 
 ## Postcondiciones
-Verificar en los registros si se guardo el valor correctamente.
+Verificar en los registros si se guardo el valor correctamente.Y tambien ver en la consolita si se ejecutaron los comandos correctos
+
 
 ## Conclusiones
 Vemos SW y LW funcionan porque luego de su ejecución R8 quedo igual que R4, no existe SWU porque es innecesario se carga todo el numero asi que no puede haber confusion en los signos.
@@ -245,4 +246,63 @@ Vemos SW y LW funcionan porque luego de su ejecución R8 quedo igual que R4, no 
 Vemos que LH nos rellena con 1 los bits de mayor valor,esto pasa porque nuestro numero tiene en la parte mas baja de bit de mayor valor un 1 entonces rellena con 1 para mantener el signo,esto con LHU no pasa nos rellana con 0 de valor esto porque LHU toma como que todo es positivo.
 
 Vemos que en LB,LBU carga el mismo valor en los registros 0x01 esto es porque si tomamos solo los ultimos 8 bits de nuestro numero es positivo entonces en tanto signed como unsigned es igual.
+
+# Caso 9
+
+## Descripcion:
+En este caso vamos a seguir probando la descarga en memoria pero a traves de los Loade indexed.
+
+## Instrucciones: LHX,LHUX,LBX,LBUX,LWX
+
+## Precondiciones
+Aca la direccion de memoria va a depender de la suma de dos registros entonces lo que vamos a hacer es cargar en un registro el numero 0x010 utilizando ORI y vamos a sumarlo con el registro 0,este 0x010 lo subiremos en el registro 5.
+Vamos a utilizar el mismo registro 4 que utilizamos en el caso anterior y los mimos comandos de store.
+Y para los load vamos a utilizar los registros 8 y 9.
+
+## Code
+```
+LUI 4 10000.. (00111 00000 00100 0 1000 0000 0000 0000) 0x38088000
+ORI 4 4 100..01 (00101 00100 00100 0 1000 0000 0000 0001) 0x29088001
+ORI 5 5 000.10000 (00101 00101 00101 0 0000 0000 0001 0000) 0x294A0010
+SW 0 4 0x10 (01001 00000 00100 0 00000...010000) 0x48080010
+LWX 0 8 5 (00000 00000 01000 00101 00000 0 010100) 0x00105014
+SH 0 4 0x10  (01010 00000 00100 0 0000...010000) 0x50080010
+LHX 0 8 5  (00000 00000 01000 00101 00000 0 010000) 0x00105010
+LHUX 0 9 5 (00000 00000 01001 00101 00000 0 010001) 0x00125011
+SB 0 4 0x10 (01011 00000 00100 0 0000....010000) 0x58080010
+LBX 0 8 5  (00000 00000 01000 00101 00000 0 010010) 0x00105012
+LBUX 0 9 5 (00000 00000 01001 00101 00000 0 010011) 0x00125013
+```
+
+## Postcondiciones
+Verificar en los registros si se guardo el valor correctamente. Y tambien ver en la consolita si se ejecutaron los comandos correctos
+
+## Conclusiones
+Al ejecutar LWX nos queda R8 = R4 por lo que funciona bien.
+Vemos que LHX nos rellena con 1 los bits MSB debido a que el bit MSB de los 16 cargados es 1 por lo que el numero es negativo,y vemos que LHUX nos carga con 0 porque toma que el numero es positivo,este es el funcionamiento esperado asi que esta bien
+Al ejecutar LBX y LBUX nos carga el mismo valor que es un simple 0x01 en hexa por lo que andan bien.
+
+# Caso 10
+
+## Descripcion: 
+En este caso vamos a hacer una prueba adicional sobre LBX y LB debido a que antes lo probamos unicamente con positivos vamos a ver si a los negativos los trata bien
+
+## Instrucciones: LB,LBX
+
+## Precondiciones
+Para esta prueba vamos a usar el mismo R5 del caso anterior y vamos a cargar en R4 con un ORI un 0x80 (esto sobre el valor que ya tiene R4 es decir no lo limpiamos previamente)
+
+## Code
+```
+ORI 4 4 0x80 (00101 00100 00100 0 0000 0000 1000 0000) 0x29088080
+SB 0 4 0x10 (01011 00000 00100 0 0000....010000) 0x58080010
+LB 0 8 0x10 (01110 00000 01000 0 0000...010000) 0x70100010
+LBX 0 9 5 (00000 00000 01001 00101 00000 0 010010) 0x00125012
+```
+
+## Postcondiciones
+Verificamos valores de los registros
+
+## Conclusiones
+Vemos que ambas instrucciones devuelven lo mismo 0x81 autocompletado con F lo que seria el valor de los 8 LSB de R4 autocompletado con 1 por ser negativo,por lo que confirmamos que LB y LBX detectan bien ambos signos.
 
