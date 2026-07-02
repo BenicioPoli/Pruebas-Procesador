@@ -1,16 +1,30 @@
 # Pruebas-Procesador
 
 # Caso 1
+
 ## Descripción
 Realizar las Cuatro Operaciones basicas entre dos registros y diferenciar los casos unsigned y signed.
 
-## Instrucciones: XOR,LUI,ORI,ADD,SUB,MUL,MULH,MULHU,DIV,DIVU,REST,RESTU
-
+## Instrucciones
+- XOR
+- LUI
+- ORI
+- ADD
+- SUB
+- MUL
+- MULH
+- MULHU
+- DIV
+- DIVU
+- REST
+- RESTU
+  
 ## Precondiciones
 Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LUI y ORI (osea un registro tendra un valor significativamente mas grande que el otro).
+
 Además antes del LUI y ORI haremos un xor de los registros con si mismos para asegurarnos que no tengan basura.
 
-Los registros que usarmeos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos (estos valores los volveremos a utilizar en proximos casos), y usaremos 8 para el resultado de las funciones y ver si andan (y también usaremos 9 en las operaciones en las que necesiemos de dos registros).
+Los registros que usaremos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos (estos valores los volveremos a utilizar en proximos casos), y usaremos 8 para el resultado de las funciones y ver si es el esperado (y también usaremos 9 en las operaciones en las que necesiemos de dos registros).
 
 Nosotros pondremos siempre el resultado de las operaciones en el mismo registro para simplificar lo que va a ocasionar que se vaya sobre escribiendo por lo que habra que ir viendo r al poner cada instrucción.
 
@@ -48,8 +62,10 @@ Vimos que el resto no da basura da 0 como debe dar en nuestro caso.
 ## Descripción
 En este caso vamos a intentar mandar una letra h a la pantalla.
 
-## Instrucciones: ADDI,SB
-
+## Instrucciones
+- ADDI
+- SB
+  
 ## Precondiciones
 Otra vez haremos que los registros esten en 0 antes de aplicarles cualquier cosa y cargaremos la h en un registro y la dirección del serial de la pantalla 0xFFFFFF00 en otro registro.
 
@@ -80,8 +96,14 @@ Vimos la comunicación con la interface serie y vemos que funciona bien.
 ## Descripción
 En este caso veremos todos los branch if a ver si salta cuando corresponde utilizando los registros del caso 1.
 
-## Instrucciones: BEQ,BNE,BLT,BGT,BLE,BGE
-
+## Instrucciones
+- BEQ
+- BNE
+- BLT
+- BGT
+- BLE
+- BGE
+  
 ## Precondiciones
 Utilizaremos los registros del Caso 1 los cuales asumimos como cargados previamente.
 
@@ -105,12 +127,16 @@ Vemos que esta saltando 0x40 cada vez que el if dice que debe saltar, salta 0x40
 
 Otra conclusión que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza con MSB en 1  es negativo por lo que es < que el que empieza en 0.
 
-# Caso 4:
+# Caso 4
+
 ## Descripción
 Hacer las operaciones booleanas entre los registros.
 
-## Instrucciones: AND,OR,NOR
-
+## Instrucciones
+- AND
+- OR
+- NOR
+  
 ## Precondiciones
 Vamos a usar los mismos registros 4 y 5 del caso 1 pero le vamos a añadir al registro 4 un 1 en el mismo bit que tiene un uno el 5 esto para poder probar el add mejor,para esto vamos a usar un ORI en el que usamos el LUI.
 
@@ -131,11 +157,16 @@ Vemos que el codigo funciono el and devuelve lo que esta almacenado en el regist
 Se pueden realizar correctamente operaciones booleanas en el procesador.
 
 # Caso 5
+
 ## Descripción
 Ver si dos Registros son menores y como cambia en signed y unsigned en estas comparaciones,tambien probar lo mismo con imms.
 
-## Instrucciones: SLT,SLTU,SLTI,SLTIU
-
+## Instrucciones
+- SLT
+- SLTU
+- SLTI
+- SLTIU
+  
 ## Precondiciones
 Utilizaremos los registros del caso 1, que los tomaremos como seteados previamente,y para hacer la comparacion con los imm utilizaremos el registro 4 por tener un contenido negativo.
 
@@ -164,7 +195,11 @@ Lo mismo con las tipo I al comparar con la imagen 0 el registro 4 en signed devu
 ## Descripción
 Vamos a probar si las cuatro instrucciones de JUMP andan correctamente y el pc salta donde debe saltar.
 
-## Instrucciones: J,JAL,JR,JALR
+## Instrucciones
+- J
+- JAL
+- JR
+- JALR
 
 ## Precondiciones
 Se recomienda empezar con el pc en 0, en las tipo J, para una mejor visualización.
@@ -191,11 +226,18 @@ Y en las tipo R hay que ver si salta a la dirección definida en el registro en 
 Vemos que todo salta adonde tiene que saltar asi que las cuatro instrucciones de JUMP andan bien.
 
 # Caso 7
+
 ## Descripción
 En este caso vamos a ver las funciones que tienen que ver con el desplazamiento de bits.
 
-## Instrucciones: SLL,SRL,SRA,SLLR,SRLR,SRAR
-
+## Instrucciones
+- SLL
+- SRL
+- SRA
+- SLLR
+- SRLR
+- SRAR
+  
 ## Precondiciones
 Para desplazar vamos a necesitar un valor que desplazar nosotros vamos a usar el valor de R4 que seteamos en el caso 4 es decir 0x80008000 sabiendo que en bianario el 8 es 1000. Es importante usar este valor para ver como
 se trata a los negativos.
@@ -237,11 +279,20 @@ Podemos concluir que SRL se usaria para unsigneds y SRA para signeds.
 Haciendo las SLLR obtuvimos los mismos resultados (esto porque usamos de R lo mismo que habiamos usado aux) asi que concluimos que los Shift funcionan bien en el procesador.
 
 # Caso 8
+
 ## Descripción
 Vamos a probar subir cosas a memoria y cargarlas en otro registro.
 
-## Instrucciones: SW,LW,SH,LH,LHU,SB,LB,LBU
-
+## Instrucciones
+- SW
+- LW
+- SH
+- LH
+- LHU
+- SB
+- LB
+- LBU
+  
 ## Precondiciones
 Vamos a usar la dirección de memoria 0x010 y vamos a asumir que estamos en una estructura de 4kb.
 
@@ -275,10 +326,15 @@ Vemos que en LB, LBU carga el mismo valor en los registros 0x01 esto es porque s
 # Caso 9
 
 ## Descripción
-En este caso vamos a seguir probando la descarga en memoria pero a traves de los Loade indexed.
+En este caso vamos a seguir probando la descarga en memoria pero a través de los Load indexed.
 
-## Instrucciones: LHX,LHUX,LBX,LBUX,LWX
-
+## Instrucciones
+- LHX
+- LHUX
+- LBX
+- LBUX
+- LWX
+  
 ## Precondiciones
 Aca la dirección de memoria va a depender de la suma de dos registros entonces lo que vamos a hacer es cargar en un registro el numero 0x010 utilizando ORI y vamos a sumarlo con el registro 0, este 0x010 lo subiremos en el registro 5.
 
@@ -316,8 +372,10 @@ Al ejecutar LBX y LBUX nos carga el mismo valor que es un simple 0x01 en hexa po
 ## Descripción
 En este caso vamos a hacer una prueba adicional sobre LBX y LB debido a que antes lo probamos unicamente con positivos vamos a ver si a los negativos los trata bien.
 
-## Instrucciones: LB,LBX
-
+## Instrucciones
+- LB
+- LBX
+  
 ## Precondiciones
 Para esta prueba vamos a usar el mismo R5 del caso anterior y vamos a cargar en R4 con un ORI un 0x80 (esto sobre el valor que ya tiene R4 es decir no lo limpiamos previamente).
 
@@ -340,8 +398,13 @@ Vemos que ambas instrucciones devuelven lo mismo 0x81 autocompletado con F lo qu
 ## Descripción
 En este caso vamos a probar las operaciones booleanas de tipo L.
 
+## Instrucciones
+- ANDI/H
+- ORI/H
+- XORI/H
+  
 ## Precondiciones
-Para esta prueba vamos a setear el R4 en 0xF000F0F0 y usaremos de imm distintos dependiendo de las operaciones. Los resultados los guardaremos en el R8
+Para esta prueba vamos a setear el R4 en 0xF000F0F0 y usaremos imms distintos dependiendo de las operaciones. Los resultados los guardaremos en el R8
 
 ## Code
 ```
@@ -357,11 +420,11 @@ XORIH 4 9 0xF000 (00110 00100 01001 1 1111 0000 0000 0000) 0x3113F000
 Analizamos con r los registros luego de cada instrucción a ver si su valor condice con la operación realizada.
 
 ## Conclusiones
-Vemos que los AND funcionan correctamente ya que nos devolvierón tanto en ANDI como ANDIH la F donde correspondia (en ANDI nos devolvieron la F de la posición 5 hexa y en ANDIH la de la posición 1).
+Vemos que los AND funcionan correctamente ya que nos devolvieron tanto en ANDI como ANDIH la F donde correspondia (en ANDI nos devolvieron la F de la posición 5 hexa y en ANDIH la de la posición 1).
 
 Vemos con los OR también funcionan ya que salen todas las F del hexa de R4 + una F adicional,en el caso de ORI esta aparece en el hexa de menor relevancia y en el caso de ORIH aparece en el cuarto hexa de mayor relevancia (por lo que respeta el bit de h la instrucción).
 
-Además los XOR funcionan debido a que elimina una F en la operación en XOR elimina la F que esta en la posicion 5 hexa y en XORI la primera (debido a que XOR elimina lugares donde hay dos 1),por lo cual la instrucción tiene el comportamiento esperado y detecta la h.
+Además los XOR funcionan debido a que elimina una F en la operación,XOR elimina la F que esta en la posición 5 hexa y en XORI la primera (debido a que XOR elimina lugares donde hay dos 1), por lo cual la instrucción tiene el comportamiento esperado y detecta la h.
 
 
 
