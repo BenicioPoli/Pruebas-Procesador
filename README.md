@@ -213,3 +213,36 @@ Podemos concluir que SRL se usaria para unsigneds y SRA para signeds
 
 Haciendo las SLLR obtuvimos los mismos resultados (esto porque usamos de R lo mismo que habiamos usado aux) asi que concluimos que los Shift funcionan bien en el procesador.
 
+# Caso 8
+## Descripcion: Vamos a probar subir cosas a memoria y cargarlas en otro registro
+
+## Instrucciones: SW,LW,SH,LH,LHU,SB,LB,LBU
+
+## Precondiciones:
+Vamos a usar la direccion de memoria 0x010 y vamos a asumir que estamos en una estructura de 4kb
+Vamos a usar para cargar un registro que tiene un 1 en el MSB un 1 en el LSB y un 1 a la mitad,este registro lo vamos a formar con el Lui del caso 1 y con un ORI esto en el registro 4,este registro lo cargaremos en memoria de distintas formas y luego para sacarlo usaremos los registros 8 y 9,y vamos a usar el registro source 0 para que la direccion sea unicamente el offset (asumimos 0 como limpio)
+
+## Code
+```
+LUI 4 10000.. (00111 00000 00100 0 1000 0000 0000 0000) 0x38088000
+ORI 4 4 100..01 (00101 00100 00100 0 1000 0000 0000 0001) 0x29088001
+SW 0 4 0x10 (01001 00000 00100 0 00000...010000) 0x48080010
+LW 0 8 0x10 (01000 00000 01000 0 00000...010000) 0x40100010
+SH 0 4 0x10  (01010 00000 00100 0 0000...010000) 0x50080010
+LH 0 8 0x10  (01100 00000 01000 0 0000...010000) 0x60100010
+LHU 0 9 0x10 (01101 00000 01001 0 0000...010000) 0x68120010
+SB 0 4 0x10 (01011 00000 00100 0 0000....010000) 0x58080010
+LB 0 8 0x10 (01110 00000 01000 0 0000....010000) 0x70100010
+LBU 0 9 0x10 (01111 00000 01001 0 0000...010000) 0x78120010
+```
+
+## Postcondiciones
+Verificar en los registros si se guardo el valor correctamente.
+
+## Conclusiones
+Vemos SW y LW funcionan porque luego de su ejecución R8 quedo igual que R4, no existe SWU porque es innecesario se carga todo el numero asi que no puede haber confusion en los signos.
+
+Vemos que LH nos rellena con 1 los bits de mayor valor,esto pasa porque nuestro numero tiene en la parte mas baja de bit de mayor valor un 1 entonces rellena con 1 para mantener el signo,esto con LHU no pasa nos rellana con 0 de valor esto porque LHU toma como que todo es positivo.
+
+Vemos que en LB,LBU carga el mismo valor en los registros 0x01 esto es porque si tomamos solo los ultimos 8 bits de nuestro numero es positivo entonces en tanto signed como unsigned es igual.
+
