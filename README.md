@@ -206,29 +206,29 @@ Vamos a probar si las cuatro instrucciones de JUMP andan correctamente y el pc s
 ## Instrucciones
 - J
 - JAL
+- JALX
 - JR
 - JALR
+- JALRX
 
 ## Precondiciones
-Se recomienda empezar con el pc en 0, en las tipo J, para una mejor visualización.
+Se recomienda empezar con el pc en 0 para una mejor visualización.
 
-Para los J tipo R nosotros usaremos el registro 0 que se encuentra vacío (estos saltos de las tipo R si se recomienda empezarlas en pc 0x08 o en otro numero que no sea 0).
-
-Aclaración: ej JALR podemos guardar donde queramos el salto que se iba a realizar naturalmente, nosotros lo guardamos en 31 para tener igual análisis que con JAL.
+Para las tipo I nostros usaremos el registro 15 en el cual vamos a guardar previamente el valor 0X4 osea que en los tipo I deberiamos saltar igual que en las J
 ## Code
 ```
-J 0x02 (00010 0...0010) 0x10000002
-JAL 0x02 (00011 0...0010) 0x18000002
-JR 0 (00000 00000 00000 00000 0 00000 001110) 0x0000000E
-JALR 0 (00000 00000 00000 11111 0 00000 001111) 0x0001F00F
+J 0x02 (00001 00 0...0010) 0x08000002 (NO SALTA DE FORMA CORRECTA)
+JAL 0x02 (00001 01 0...0010) 0x0A000002 (HACE UN J)
+JALX 0x02 (00001 100 0...0010) 0x0C000002 (HACE UN J)
+JR 15 0x02 (00010 01111 00 00...0010) 0x13800002 (salta mal en vez de 15 un 0)
+JALR 15 0x02 (00010 01111 01 00...010) 0x1391F002 (salta mal excepcion)
 ```
 
 ## Postcondiciones
-Para ver si las tipo J funcionaron hay que ver si salta adonde debe,con ese salto que pusimos el pc debe saltar 8 posiciones (esto debido a que el salto se forma con el valor ingresado + en los 3 MSB los del pc actual + en la 2 LSB 0) entonces 1000 es 8 por lo que empezando en 0 el pc debera saltar a 0x8 en vez de a 0x4 como hace habitualmente.
+Para ver si las tipo J funcionaron hay que ver si salta adonde debe,con ese salto que pusimos el pc debe saltar  a 0x0C
+Y además al ejecutar los JAL se debe poder ver con r que el registro correspondiente guarde el valor del proximo pc
 
-Y además al ejecutar los JAL se debe poder ver con r que el R[31] guarde en este caso un 4 que es el pc adonde iria sin el salto.
-
-Y en las tipo R hay que ver si salta a la dirección definida en el registro en este caso 0 y si en R[31] se guarda el pc + 4 en el caso del JALR
+Y en las tipo I lo mismo
 
 ## Conclusiones
 Vemos que todo salta adonde tiene que saltar asi que las cuatro instrucciones de JUMP andan bien.
