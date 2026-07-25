@@ -439,7 +439,35 @@ Vemos con los OR también funcionan ya que salen todas las F del hexa de R4 + un
 
 Además los XOR funcionan debido a que elimina una F en la operación,XOR elimina la F que esta en la posición 5 hexa y en XORI la primera (debido a que XOR elimina lugares donde hay dos 1), por lo cual la instrucción tiene el comportamiento esperado y detecta la h.
 
+# Caso 12
 
+## Descripción
+En este caso vamos a probar las instrucciones de rotación
 
+## Instrucciones
+- RLC
+- RLCR
 
+## Precondiciones
+Para esta prueba vamos a setear el Registro R4 en 0x60000000, R5 en 0x01 y R6 en 0x02.
+
+## Code
+```
+RLC 4 8 1 (00000 00000 00100 01000 00001 0 000001) 0x00088081
+RLC 4 9 2 (00000 00000 00100 01001 00010 0 000001) 0x00089101
+RLCR 5 4 8 (00000 00101 00100 01000 00000 0 000101) 0x01488005
+RLCR 6 4 9 (00000 00110 00100 01001 00000 0 000101) 0x01889005
+```
+
+## Postcondiciones
+Verificar como siempre en r que los registros sufran las modificaciones correspondientes,y ver en la consola si se ejecuto la instrucción correcta
+
+## Conclusiones
+
+Vemos que en el primer RLC que movimos un lugar obtuvimos de resultado 0xC0000000 lo cual corresponde ya que en el hexa de mayor valor pasamos de 0110 a 1100 debido al movimiento de un bit.
+
+Luego en el segundo RLC que movimos dos lugares obuvimos de resultado 0x80000001 lo cual corresponde porque movimos dos lugares los bits por lo que en el hexa de mayor valor pasamos de 0110 a 1000 y el 1 que quedo afuera paso al oro lado por lo que el digito hexa de mayor valor se transformo en un 1.
+
+Al ejecutar RLCR con los mismos números obtuvimos los mismos resultados por lo que ambas instrucciones funcionan.
+ 
 
