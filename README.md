@@ -330,14 +330,15 @@ Vemos SW y LW funcionan porque luego de su ejecución R8 quedo igual que R4, no 
 Vemos que LH nos rellena con 1 los bits de mayor valor, esto pasa porque nuestro numero tiene en la parte mas baja de bit de mayor valor un 1 entonces rellena con 1 para mantener el signo, esto con LHU no pasa nos rellana con 0 de valor esto porque LHU toma como que todo es positivo.
 
 Vemos que en LB, LBU carga el mismo valor en los registros 0x01 esto es porque si tomamos solo los ultimos 8 bits de nuestro numero es positivo entonces en tanto signed como unsigned es igual.
-
-Ahora si probamos teniendo en R4 0x80 vemos que en LB rellena con 1 los seis digitos hexa de mayor relevancia en LBU con 0 por lo cual la detección del signo funciona a la perfección.
 # Caso 9
 
 ## Descripción
-En este caso vamos a seguir probando la descarga en memoria pero a través de los Load indexed.
+En este caso vamos a seguir probando la carga y descarga en memoria pero a través de los Store y Load indexed.
 
 ## Instrucciones
+- SWX
+- SHX
+- SBX
 - LHX
 - LHUX
 - LBX
@@ -347,21 +348,21 @@ En este caso vamos a seguir probando la descarga en memoria pero a través de lo
 ## Precondiciones
 Aca la dirección de memoria va a depender de la suma de dos registros entonces lo que vamos a hacer es cargar en un registro el numero 0x010 utilizando ORI y vamos a sumarlo con el registro 0, este 0x010 lo subiremos en el registro 5.
 
-Vamos a utilizar el mismo registro 4 que utilizamos en el caso anterior y los mismos comandos de store.
+Vamos a utilizar el mismo registro 4 que utilizamos en el caso anterior.
 
 Y para los load vamos a utilizar los registros 8 y 9.
 
 ## Code
 ```
-LUI 4 10000.. (00111 00000 00100 0 1000 0000 0000 0000) 0x38088000
-ORI 4 4 100..01 (00101 00100 00100 0 1000 0000 0000 0001) 0x29088001
-ORI 5 5 000.10000 (00101 00101 00101 0 0000 0000 0001 0000) 0x294A0010
-SW 0 4 0x10 (01001 00000 00100 0 00000...010000) 0x48080010
+LCI 4 4 10000.. (00100 00100 00100 1 1000 0000 0000 0000) 0x21098000
+ORI 4 4 100..01 (00110 00100 00100 0 1000 0000 0000 0001) 0x31088001
+ORI 5 5 000.10000 (00110 00101 00101 0 0000 0000 0001 0000) 0x314A0010
+SWX 0 4 5 (00000 00000 00100 00101 00000 0 010101) 0x00085015 (No funca :<)
 LWX 0 8 5 (00000 00000 01000 00101 00000 0 010100) 0x00105014
-SH 0 4 0x10  (01010 00000 00100 0 0000...010000) 0x50080010
+SHX 0 4 5 (00000 00000 00100 00101 00000 0 010110) 0x00085016 (No funca :<)
 LHX 0 8 5  (00000 00000 01000 00101 00000 0 010000) 0x00105010
 LHUX 0 9 5 (00000 00000 01001 00101 00000 0 010001) 0x00125011
-SB 0 4 0x10 (01011 00000 00100 0 0000....010000) 0x58080010
+SBX 0 4 5  (00000 00000 00100 00101 00000 0 010111) 0x00085017 (No funca :<)
 LBX 0 8 5  (00000 00000 01000 00101 00000 0 010010) 0x00105012
 LBUX 0 9 5 (00000 00000 01001 00101 00000 0 010011) 0x00125013
 ```
@@ -390,7 +391,7 @@ Para esta prueba vamos a usar el mismo R5 del caso anterior y vamos a cargar en 
 
 ## Code
 ```
-ORI 4 4 0x80 (00101 00100 00100 0 0000 0000 1000 0000) 0x29088080
+ORI 4 4 0x80 (00110 00100 00100 0 0000 0000 1000 0000) 0x31088080
 SB 0 4 0x10 (01011 00000 00100 0 0000....010000) 0x58080010
 LB 0 8 0x10 (01110 00000 01000 0 0000...010000) 0x70100010
 LBX 0 9 5 (00000 00000 01001 00101 00000 0 010010) 0x00125012
@@ -408,28 +409,31 @@ Vemos que ambas instrucciones devuelven lo mismo 0x81 autocompletado con F lo qu
 En este caso vamos a probar las operaciones booleanas de tipo L.
 
 ## Instrucciones
-- ANDI/H
+- ANDI
+- ANI/H
 - ORI/H
 - XORI/H
   
 ## Precondiciones
-Para esta prueba vamos a setear el R4 en 0xF000F0F0 y usaremos imms distintos dependiendo de las operaciones. Los resultados los guardaremos en el R8
+Para esta prueba vamos a setear el R4 en 0xF000F0F0 y usaremos imms distintos dependiendo de las operaciones. Los resultados los guardaremos en el R8,R9 y R10 
 
 ## Code
 ```
-ANDI  4 8 0xF000 (00100 00100 01000 0 1111 0000 0000 0000) 0x2110F000
-ANDIH 4 9 0xF000 (00100 00100 01001 1 1111 0000 0000 0000) 0x2113F000
-ORI   4 8 0xF00F (00101 00100 01000 0 1111 0000 0000 1111) 0x2910F00F
-ORIH  4 9 0xF00F (00101 00100 01001 1 1111 0000 0000 1111) 0x2913F00F
-XORI  4 9 0xF000 (00110 00100 01000 0 1111 0000 0000 0000) 0x3110F000
-XORIH 4 9 0xF000 (00110 00100 01001 1 1111 0000 0000 0000) 0x3113F000
+ANDI 4 8 0xF000 (00100 00100 01000 0 1111 0000 0000 0000) 0x2110F000 (No anda bien)
+ANI  4 9 0xF000 (00101 00100 01001 0 1111 0000 0000 0000) 0x2912F000 (No mantiene parte de arriba)
+ANH  4 10 0xF000 (00101 00100 01010 1 1111 0000 0000 0000) 0x2915F000 (No mantiene parte de abajo)
+ORI  4 8 0xF00F (00110 00100 01000 0 1111 0000 0000 1111) 0x3110F00F
+ORIH 4 9 0xF00F (00110 00100 01001 1 1111 0000 0000 1111) 0x3113F00F
+XORI 4 8 0xF000 (00111 00100 01000 0 1111 0000 0000 0000) 0x3910F000
+XORH 4 9 0xF000 (00111 00100 01001 1 1111 0000 0000 0000) 0x3913F000
 ```
 
 ## Postcondiciones
 Analizamos con r los registros luego de cada instrucción a ver si su valor condice con la operación realizada.
 
 ## Conclusiones
-Vemos que los AND funcionan correctamente ya que nos devolvieron tanto en ANDI como ANDIH la F donde correspondia (en ANDI nos devolvieron la F de la posición 5 hexa y en ANDIH la de la posición 1).
+Vemos que los AND dan problemas...
+
 
 Vemos con los OR también funcionan ya que salen todas las F del hexa de R4 + una F adicional,en el caso de ORI esta aparece en el hexa de menor relevancia y en el caso de ORIH aparece en el cuarto hexa de mayor relevancia (por lo que respeta el bit de h la instrucción).
 
