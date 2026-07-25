@@ -36,7 +36,7 @@ Nosotros pondremos siempre el resultado de las operaciones en el mismo registro 
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
-LCI 0 4 10000.. (00100 00000 00100 1 1000 0000 0000 0000) 0x20098000 (por el momento no anda hace un ANDI lo cargamos a mano momentaneamente)
+LCI 4 4 10000.. (00100 00100 00100 1 1000 0000 0000 0000) 0x21098000 (por el momento no anda hace un ANDI lo cargamos a mano momentaneamente)
 ORI 5 5 100.. (00110 00101 00101 0 1000 0000 0000 0000) 0x314A8000
 ADD 4 5 8 (00000 00100 00101 01000 00000 0 001100) 0x010A800C
 SUB 4 5 8 (00000 00100 00101 01000 00000 0 001101) 0x010A800D
@@ -214,14 +214,15 @@ Vamos a probar si las cuatro instrucciones de JUMP andan correctamente y el pc s
 ## Precondiciones
 Se recomienda empezar con el pc en 0 para una mejor visualización.
 
-Para las tipo I nostros usaremos el registro 15 en el cual vamos a guardar previamente el valor 0X4 osea que en los tipo I deberiamos saltar igual que en las J
+Para las tipo I nostros usaremos el registro 15 en el cual vamos a guardar previamente el valor 0x4 osea que en los tipo I deberiamos saltar igual que en las J
 ## Code
 ```
 J 0x02 (00001 00 0...0010) 0x08000002 (NO SALTA DE FORMA CORRECTA)
 JAL 0x02 (00001 01 0...0010) 0x0A000002 (HACE UN J)
 JALX 0x02 (00001 100 0...0010) 0x0C000002 (HACE UN J)
-JR 15 0x02 (00010 01111 00 00...0010) 0x13800002 (salta mal en vez de 15 un 0)
-JALR 15 0x02 (00010 01111 01 00...010) 0x1391F002 (salta mal excepcion)
+JR 15 0x02 (00010 01111 00 00...0010) 0x13C00002 
+JALR 15 0x02 (00010 01111 01 00...010) 0x13D00002 (Hace un JR)
+JALR 15 0X02 (00010 01111 1 01 00...010) 0x13E80002 (Hace un JR)
 ```
 
 ## Postcondiciones
@@ -231,7 +232,7 @@ Y además al ejecutar los JAL se debe poder ver con r que el registro correspond
 Y en las tipo I lo mismo
 
 ## Conclusiones
-Vemos que todo salta adonde tiene que saltar asi que las cuatro instrucciones de JUMP andan bien.
+Vemos que JR funciona bien estemos en el pc que estemos vamos a saltar a 0x0C que es la suma entre 0x04 y la imagen extendida.
 
 # Caso 7
 
