@@ -127,7 +127,6 @@ BLTU 4 5 0x000F (10100 00100 00101 0 000...0100) 0xA10A0004
 BGEU 4 5 0x000F (10101 00100 00101 0 000...0100) 0xA90A0004
 ```
 
-
 ## Postcondiciones
 Si funciono en este caso se ve en la consola porque nos va a decir que saltamos al pc tanto y si vemos que avanzamos un pc nada más es que no aplicaba el salto.
 
@@ -151,7 +150,7 @@ Vamos a usar los mismos registros 4 y 5 del caso 1 pero le vamos a añadir al re
 
 ## Code
 ```
-ORI 4 4 100.. (00101 00100 00100 0 1000 0000 0000 0000) 0x29088000
+ORI 4 4 100.. (00110 00100 00100 0 1000 0000 0000 0000) 0x31088000
 AND 4 5 8 (00000 00100 00101 01000  00000 0 001000) 0x010A8008
 OR 4 5 8  (00000 00100 00101 01000  00000 0 001001) 0x010A8009
 NOR 4 5 8 (00000 00100 00101 01000  00000 0 001011) 0x010A800B
@@ -185,10 +184,10 @@ Vamos a comparar en las tipo I con una imagen cero para hacer más facil el anal
 
 ## Code
 ```
-SLT 4 5 8 (00000 00100 00101 01000 000000 001100) 0x010A800C
-SLTU 4 5 9 (00000 00100 00101 01001 000000 001101) 0x010A900D
+SLT 4 5 8 (00000 00100 00101 01000 000000 001110) 0x010A800E
+SLTU 4 5 9 (00000 00100 00101 01001 000000 001111) 0x010A900F
 SLTI 4 8 0 (10110 00100 01000 0 00000..000) 0xB1100000 
-SLTIU 4 8 0  (10111 00100 01001 0 00000..000) 0xB9120000
+SLTIU 4 9 0  (10111 00100 01001 0 00000..000) 0xB9120000
 ```
 
 ## Postcondiciones
