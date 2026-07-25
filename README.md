@@ -247,7 +247,7 @@ En este caso vamos a ver las funciones que tienen que ver con el desplazamiento 
 - SRAR
   
 ## Precondiciones
-Para desplazar vamos a necesitar un valor que desplazar nosotros vamos a usar el valor de R4 que seteamos en el caso 4 es decir 0x80008000 sabiendo que en bianario el 8 es 1000. Es importante usar este valor para ver como
+Para desplazar vamos a necesitar un valor que desplazar nosotros vamos a usar el valor de R4 que seteamos en el caso 4 es decir 0x80008000 sabiendo que en binario el 8 es 1000. Es importante usar este valor para ver como
 se trata a los negativos.
 
 Además debemos guardar en un registro algun valor para podes hacer el desplazamiento, como para desplazar se toman los bits de menor relevancia y para simplificar el movimiento vamos a cargar en un registro un simple 2 utilizando ORI, esto lo haremos en el registro 6 y vamos a limpiar el registro previamente para no tener basura.
@@ -257,15 +257,15 @@ Guardaremos los resultados en los registros 8, 9 y 10.
 ## Code
 ```
 XOR 6 6 6  (00000 00110 00110 00110 00000 0 001010) 0x018C600A
-ORI 6 6 2  (00101 00110 00110 0 0000 0000 0000 0010) 0x298C0002
+ORI 6 6 2  (00110 00110 00110 0 0000 0000 0000 0010) 0x398C0002
 SLL 0 4 8 aux:2  (00000 00000 00100 01000 00010 0 000000) 0x00088100  
-SRL 0 4 9 aux:2  (00000 00000 00100 01001 00010 0 000001) 0x00089101
-SRA 0 4 10 aux:2 (00000 00000 00100 01010 00010 0 000010) 0x0008A102
-SRA 0 5 10 aux:2 (00000 00000 00101 01010 00010 0 000010) 0x000AA102
-SLLR 6 4 8  (00000 00110 00100 01000 00000 0 000011) 0x01888003
-SRLR 6 4 9  (00000 00110 00100 01001 00000 0 000100) 0x01889004
-SRAR 6 4 10 (00000 00110 00100 01010 00000 0 000101) 0x0188A005
-SRAR 6 5 10 (00000 00110 00101 01010 00000 0 000101) 0x018AA005
+SRL 0 4 9 aux:2  (00000 00000 00100 01001 00010 0 000010) 0x00089102
+SRA 0 4 10 aux:2 (00000 00000 00100 01010 00010 0 000011) 0x0008A103
+SRA 0 5 10 aux:2 (00000 00000 00101 01010 00010 0 000011) 0x000AA103
+SLLR 6 4 8  (00000 00110 00100 01000 00000 0 000100) 0x01888004
+SRLR 6 4 9  (00000 00110 00100 01001 00000 0 000110) 0x01889006
+SRAR 6 4 10 (00000 00110 00100 01010 00000 0 000111) 0x0188A007
+SRAR 6 5 10 (00000 00110 00101 01010 00000 0 000111) 0x018AA007
 ```
 
 ## Postcondiciones
@@ -284,7 +284,7 @@ Para ver si los 1 eran por ser negativo o era siempre probamos con el registro 5
 
 Podemos concluir que SRL se usaria para unsigneds y SRA para signeds.
 
-Haciendo las SLLR obtuvimos los mismos resultados (esto porque usamos de R lo mismo que habiamos usado aux) asi que concluimos que los Shift funcionan bien en el procesador.
+Haciendo las SLLR obtuvimos los mismos resultados (esto porque usamos de R lo mismo que habiamos usado param) asi que concluimos que los Shift funcionan bien en el procesador.
 
 # Caso 8
 
@@ -304,12 +304,12 @@ Vamos a probar subir cosas a memoria y cargarlas en otro registro.
 ## Precondiciones
 Vamos a usar la dirección de memoria 0x010 y vamos a asumir que estamos en una estructura de 4kb.
 
-Vamos a usar para cargar un registro que tiene un 1 en el MSB un 1 en el LSB y un 1 a la mitad (en el bit de mayor relevancia del quinto digito hexa), este registro lo vamos a formar con el Lui del caso 1 y con un ORI esto en el registro 4,este registro lo cargaremos en memoria de distintas formas y luego para sacarlo usaremos los registros 8 y 9, y vamos a usar el registro source 0 para que la dirección sea unicamente el offset (asumimos 0 como limpio).
+Vamos a usar para cargar un registro que tiene un 1 en el MSB un 1 en el LSB y un 1 a la mitad (en el bit de mayor relevancia del quinto digito hexa), este registro lo vamos a formar con el LCI del caso 1 y con un ORI esto en el registro 4,este registro lo cargaremos en memoria de distintas formas y luego para sacarlo usaremos los registros 8 y 9, y vamos a usar el registro source 0 para que la dirección sea unicamente el offset (asumimos 0 como limpio).
 
 ## Code
 ```
-LUI 4 10000.. (00111 00000 00100 0 1000 0000 0000 0000) 0x38088000
-ORI 4 4 100..01 (00101 00100 00100 0 1000 0000 0000 0001) 0x29088001
+LCI 4 4 10000.. (00100 00100 00100 1 1000 0000 0000 0000) 0x21098000
+ORI 4 4 100..01 (00110 00100 00100 0 1000 0000 0000 0001) 0x31088001
 SW 0 4 0x10 (01001 00000 00100 0 00000...010000) 0x48080010
 LW 0 8 0x10 (01000 00000 01000 0 00000...010000) 0x40100010
 SH 0 4 0x10  (01010 00000 00100 0 0000...010000) 0x50080010
@@ -331,6 +331,7 @@ Vemos que LH nos rellena con 1 los bits de mayor valor, esto pasa porque nuestro
 
 Vemos que en LB, LBU carga el mismo valor en los registros 0x01 esto es porque si tomamos solo los ultimos 8 bits de nuestro numero es positivo entonces en tanto signed como unsigned es igual.
 
+Ahora si probamos teniendo en R4 0x80 vemos que en LB rellena con 1 los seis digitos hexa de mayor relevancia en LBU con 0 por lo cual la detección del signo funciona a la perfección.
 # Caso 9
 
 ## Descripción
