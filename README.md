@@ -1,4 +1,7 @@
 # Pruebas-Procesador
+# Aclaración
+
+Los Registros que utilizamos nosotros 4 y 5 deberian ser reemplazador por los 14 y 15 que son los $t0 y $t1 si bien los que usamos nosotros $lr0 $lr1 se pueden utilizar apra guardar valores no es recomendable segun la guia de convencion nosotros lo hacemos porque estamos realizando pruebas,ademas de que la primer versión de esta guia fue hecha con esos registros suponiendolos $t0 y $t1,entonces para no rehacer la guia seguiremos utilizando estos registros 4 y 5,que para lo que queremos nos sirve.
 
 # Caso 1
 
@@ -7,22 +10,23 @@ Realizar las Cuatro Operaciones basicas entre dos registros y diferenciar los ca
 
 ## Instrucciones
 - XOR
-- LUI
+- LCI
 - ORI
 - ADD
 - SUB
 - MUL
 - MULH
 - MULHU
+- MULHSU
 - DIV
 - DIVU
 - REST
 - RESTU
   
 ## Precondiciones
-Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LUI y ORI (osea un registro tendra un valor significativamente mas grande que el otro).
+Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LCI y ORI (osea un registro tendra un valor significativamente mas grande que el otro).
 
-Además antes del LUI y ORI haremos un xor de los registros con si mismos para asegurarnos que no tengan basura.
+Además antes del LCI y ORI haremos un xor de los registros con si mismos para asegurarnos que no tengan basura.
 
 Los registros que usaremos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos (estos valores los volveremos a utilizar en proximos casos), y usaremos 8 para el resultado de las funciones y ver si es el esperado (y también usaremos 9 en las operaciones en las que necesiemos de dos registros).
 
@@ -32,28 +36,32 @@ Nosotros pondremos siempre el resultado de las operaciones en el mismo registro 
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
-LUI 4 10000.. (00111 00000 00100 0 1000 0000 0000 0000) 0x38088000
-ORI 5 5 100.. (00101 00101 00101 0 1000 0000 0000 0000) 0x294A8000
-ADD 4 5 8 (00000 00100 00101 01000 00000 0 011100) 0x010A801C
-SUB 4 5 8 (00000 00100 00101 01000 00000 0 011101) 0x010A801D
-MUL 4 5 8 (00000 00100 00101 01000 00000 0 010101) 0x010A8015
-MULH 4 5 9 (00000 00100 00101 01001 00000 0 010110) 0x010A9016
-MULHU 4 5 9 (00000 00100 00101 01001 00000 0 010111) 0x010A9017
-DIV 4 5 8 (00000 00100 00101 01000 00000 0 011000) 0x010A8018
-REST 4 5 9 (00000 00100 00101 01001 00000 0 011010) 0x010A901A
-DIVU 4 5 8 (00000 00100 00101 01000 00000 0 011001) 0x010A8019
-RESTU 4 5 9 (00000 00100 00101 01001 00000 0 011011) 0x010A901B
+LCI 0 4 10000.. (00100 00000 00100 1 1000 0000 0000 0000) 0x20098000 (por el momento no anda hace un ANDI lo cargamos a mano momentaneamente)
+ORI 5 5 100.. (00110 00101 00101 0 1000 0000 0000 0000) 0x314A8000
+ADD 4 5 8 (00000 00100 00101 01000 00000 0 001100) 0x010A800C
+SUB 4 5 8 (00000 00100 00101 01000 00000 0 001101) 0x010A800D
+MUL 4 5 8 (00000 00100 00101 01000 00000 0 011000) 0x010A8018
+MULH 4 5 9 (00000 00100 00101 01001 00000 0 011001) 0x010A9019
+MULHU 4 5 9 (00000 00100 00101 01001 00000 0 011010) 0x010A901A
+MULHSU 4 5 8 (00000 00100 00101 01000 00000 0 011011) 0x010A801B (NO ANDA DA IGUAL EN AMBOS)
+MULHSU 5 4 9 (00000 00101 00100 01001 00000 0 011011) 0x0148901B (NO ANDA DA IGUAL EN AMBOS)
+DIV 4 5 8 (00000 00100 00101 01000 00000 0 011100) 0x010A801C
+REST 4 5 9 (00000 00100 00101 01001 00000 0 011110) 0x010A901E
+DIVU 4 5 8 (00000 00100 00101 01000 00000 0 011101) 0x010A801D
+RESTU 4 5 9 (00000 00100 00101 01001 00000 0 011111) 0x010A901F
 ```
 
 ## Postcondiciones
 Para ir controlando si el codigo esta funcionando vamos poniendo r a ver si los registros se actualizaron ademas vemos en la consola del procesador si tomo bien la instrucción entre otras cosas.
 
 ## Conclusiones
-Vemos que las instrucciones anduvieron de 10 y que en SUB al producirse un underflow el procesador maneja este underflow apagando el bit de signo (el MSB) por lo cual el numero es interpretado en forma erronea culpa del subdesbordamiento.
+Vemos que las instrucciones anduvieron de 10 y que en SUB al producirse un underflow el procesador maneja este underflow apagando el bit de signo (el MSB) por lo cual el numero es interpretado en forma erronea culpa del subdesbordamiento (la resta nos da como resultado 0x7FFF8000,que es positivo y no negativo,esto porque el negativo que se deberia representar tiene 33 bits lo cual es irrepresentable por nuestra maquina)
 
 Vemos también que por como se calcula la multiplicación binaria el procesador se puede ahorrar tener un MULU ya que la parte baja no variara entre signed y unsigned.
 
 Vemos el funcionamiento de unsigned y signed por ejemplo en la misma multiplicación donde al poner unsigned la parte mayor da 0x00004000 contra los 0xFFFFC000 queda al usar signed,esto tambien se ve en la division donde nos da 0xFFFF0000 en el signed y 0x0001000 en el unsigned.
+
+Para probar MULHSU lo que haremos es ver si detecta bien lo de poner unsigned un argumento para eso testearemos usando el registro 4 (con valor negativo) como el signed y luego como el unsigned a ver si el resultado cambia como deberia,vemos que por el momento no lo hace.
 
 Vimos que el resto no da basura da 0 como debe dar en nuestro caso.
 
@@ -81,8 +89,8 @@ Usaremos los registros 4 y 5 para guardar la dirección del serie y la h.
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
-ADDI 4 4 0xFF00 (00001 00100 00100 1 1111111100000000) 0x0909FF00
-ADDI 5 5 0x0068 (00001 00101 00101 0 0000000001000100) 0x094A0068
+ADDI 4 4 0xFF00 (00011 00100 00100 1 1111111100000000) 0x1909FF00 (log bugeado instruccion anda bien)
+ADDI 5 5 0x0068 (00011 00101 00101 0 0000000001000100) 0x194A0068 (log bugeado instruccion anda bien)
 SB 4 5 0 (01011 00100 00101 0 00000000..00) 0x590A0000
 ```
 ## Postcondiciones
@@ -100,32 +108,33 @@ En este caso veremos todos los branch if a ver si salta cuando corresponde utili
 - BEQ
 - BNE
 - BLT
-- BGT
-- BLE
 - BGE
+- BLTU
+- BGEU
   
 ## Precondiciones
 Utilizaremos los registros del Caso 1 los cuales asumimos como cargados previamente.
 
-Para que se note el salto utilizaremos un salto de 0x000F.
+Para que se note el salto utilizaremos un salto de 4 instrucciones.
 
 ## Code
 ```
-BEQ 4 5 0x000F (10000 00100 00101 0 000...1111) 0x810A000F
-BNE 4 5 0x000F (10001 00100 00101 0 000...1111) 0x890A000F
-BLT 4 5 0x000F (10010 00100 00101 0 000...1111) 0x910A000F
-BGT 4 5 0x000F (10011 00100 00101 0 000...1111) 0x990A000F
-BLE 4 5 0x000F (10100 00100 00101 0 000...1111) 0xA10A000F
-BGE 4 5 0x000F (10101 00100 00101 0 000...1111) 0xA90A000F
+BEQ 4 5 0x000F (10000 00100 00101 0 000...0100) 0x810A0004
+BNE 4 5 0x000F (10001 00100 00101 0 000...0100) 0x890A0004 (MAL SALTO)
+BLT 4 5 0x000F (10010 00100 00101 0 000...0100) 0x910A0004
+BGE 4 5 0x000F (10011 00100 00101 0 000...0100) 0x990A0004
+BLTU 4 5 0x000F (10100 00100 00101 0 000...0100) 0xA10A0004
+BGEU 4 5 0x000F (10101 00100 00101 0 000...0100) 0xA90A0004
 ```
+
 
 ## Postcondiciones
 Si funciono en este caso se ve en la consola porque nos va a decir que saltamos al pc tanto y si vemos que avanzamos un pc nada más es que no aplicaba el salto.
 
 ## Conclusiones
-Vemos que esta saltando 0x40 cada vez que el if dice que debe saltar, salta 0x40 debido a como el procesador calcula el offset,ya que este lo calculo agregandole a la imm 13 bits a la izquierda y 2 bits a la derecha (en este caso todos 0) entonces nuestra F queda como 111100, por lo cual aparta de salto 0x3C, a esto se le deben sumar los 4 que se iba a mover ya el pc por lo que ahi nos da el 0x40 de salto.
+Vemos que en nuestro caso por como se calcula el salto deberia estar saltando 0x10 cada vez que deberia saltar,vemos que salta cuando debe,pero lo hace de forma erronea saltando de 0x04 a 0x80000010 en vez de a 0x018 como corresponderia.
 
-Otra conclusión que vemos es que el signo funciona muy bien ya que detecto que el registro que empieza con MSB en 1  es negativo por lo que es < que el que empieza en 0.
+Salta en BNE,BLT,BGEU lo cual corresponde por los valores en los registros.
 
 # Caso 4
 
