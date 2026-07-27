@@ -352,6 +352,7 @@ Vemos SW y LW funcionan porque luego de su ejecución R8 quedo igual que R4, no 
 Vemos que LH nos rellena con 1 los bits de mayor valor, esto pasa porque nuestro numero tiene en la parte mas baja de bit de mayor valor un 1 entonces rellena con 1 para mantener el signo, esto con LHU no pasa nos rellana con 0 de valor esto porque LHU toma como que todo es positivo.
 
 Vemos que en LB, LBU carga el mismo valor en los registros 0x01 esto es porque si tomamos solo los ultimos 8 bits de nuestro numero es positivo entonces en tanto signed como unsigned es igual.
+
 # Caso 9
 
 ## Descripción
@@ -379,12 +380,12 @@ Y para los load vamos a utilizar los registros 8 y 9.
 LCI 4 4 10000.. (00100 00100 00100 1 1000 0000 0000 0000) 0x21098000
 ORI 4 4 100..01 (00110 00100 00100 0 1000 0000 0000 0001) 0x31088001
 ORI 5 5 000.10000 (00110 00101 00101 0 0000 0000 0001 0000) 0x314A0010
-SWX 0 4 5 (00000 00000 00100 00101 00000 0 010101) 0x00085015 (No funca :<)
+SWX 0 4 5 (00000 00000 00100 00101 00000 0 010101) 0x00085015 
 LWX 0 8 5 (00000 00000 01000 00101 00000 0 010100) 0x00105014
-SHX 0 4 5 (00000 00000 00100 00101 00000 0 010110) 0x00085016 (No funca :<)
+SHX 0 4 5 (00000 00000 00100 00101 00000 0 010110) 0x00085016 
 LHX 0 8 5  (00000 00000 01000 00101 00000 0 010000) 0x00105010
 LHUX 0 9 5 (00000 00000 01001 00101 00000 0 010001) 0x00125011
-SBX 0 4 5  (00000 00000 00100 00101 00000 0 010111) 0x00085017 (No funca :<)
+SBX 0 4 5  (00000 00000 00100 00101 00000 0 010111) 0x00085017 
 LBX 0 8 5  (00000 00000 01000 00101 00000 0 010010) 0x00105012
 LBUX 0 9 5 (00000 00000 01001 00101 00000 0 010011) 0x00125013
 ```
@@ -398,6 +399,8 @@ Al ejecutar LWX nos queda R8 = R4 por lo que funciona bien.
 Vemos que LHX nos rellena con 1 los bits MSB debido a que el bit MSB de los 16 cargados es 1 por lo que el numero es negativo, y vemos que LHUX nos carga con 0 porque toma que el numero es positivo, este es el funcionamiento esperado asi que esta bien.
 
 Al ejecutar LBX y LBUX nos carga el mismo valor que es un simple 0x01 en hexa por lo que andan bien.
+
+Como los LOAD andan bien entonces podemos asumir que los STORE funcionan correctamente.
 
 # Caso 10
 
@@ -441,9 +444,9 @@ Para esta prueba vamos a setear el R4 en 0xF000F0F0 y usaremos imms distintos de
 
 ## Code
 ```
-ANDI 4 8 0xF000 (00100 00100 01000 0 1111 0000 0000 0000) 0x2110F000 (No anda bien)
-ANI  4 9 0xF000 (00101 00100 01001 0 1111 0000 0000 0000) 0x2912F000 (No mantiene parte de arriba)
-ANH  4 10 0xF000 (00101 00100 01010 1 1111 0000 0000 0000) 0x2915F000 (No mantiene parte de abajo)
+ANDI 4 8 0xF000 (00100 00100 01000 0 1111 0000 0000 0000) 0x2110F000 
+ANI  4 9 0xF000 (00101 00100 01001 0 1111 0000 0000 0000) 0x2912F000 
+ANH  4 10 0xF000 (00101 00100 01010 1 1111 0000 0000 0000) 0x2915F000 
 ORI  4 8 0xF00F (00110 00100 01000 0 1111 0000 0000 1111) 0x3110F00F
 ORIH 4 9 0xF00F (00110 00100 01001 1 1111 0000 0000 1111) 0x3113F00F
 XORI 4 8 0xF000 (00111 00100 01000 0 1111 0000 0000 0000) 0x3910F000
@@ -454,7 +457,7 @@ XORH 4 9 0xF000 (00111 00100 01001 1 1111 0000 0000 0000) 0x3913F000
 Analizamos con r los registros luego de cada instrucción a ver si su valor condice con la operación realizada.
 
 ## Conclusiones
-Vemos que los AND dan problemas...
+Vemos que ANDI devuelve unicamente 0xF000 esto porque no mantiene la parte de arriba solo hace and con la de abajo,en cambio ANI mantiene la parte de arriba intacta y devuelve 0xF0F0F000 y ANH mantiene la parte de abajo intacta y hace and con la de arriba (a diferencia de las dos anteriores que hacian con la parte de abajo), por lo que deuvelve 0xF000F0F0.
 
 
 Vemos con los OR también funcionan ya que salen todas las F del hexa de R4 + una F adicional,en el caso de ORI esta aparece en el hexa de menor relevancia y en el caso de ORIH aparece en el cuarto hexa de mayor relevancia (por lo que respeta el bit de h la instrucción).
