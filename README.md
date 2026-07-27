@@ -24,11 +24,11 @@ Realizar las Cuatro Operaciones basicas entre dos registros y diferenciar los ca
 - RESTU
   
 ## Precondiciones
-Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LCI y ORI (osea un registro tendra un valor significativamente mas grande que el otro).
+Previamente antes de sumar los registros tengo que cargarles algun valor para eso vamos a usar las instruciones LCI y ORI (osea un registro tendra un valor significativamente mas grande que el otro,ya que en uno cargaremos en la parte superior y otro en la inferior).
 
 Además antes del LCI y ORI haremos un xor de los registros con si mismos para asegurarnos que no tengan basura.
 
-Los registros que usaremos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos (estos valores los volveremos a utilizar en proximos casos), y usaremos 8 para el resultado de las funciones y ver si es el esperado (y también usaremos 9 en las operaciones en las que necesiemos de dos registros).
+Los registros que usaremos para guardar los valores seran  4 y 5 para guardar los valores que utilizaremos (estos valores los volveremos a utilizar en proximos casos), y usaremos 8 para el resultado de las funciones y ver si es el esperado (y también usaremos 9 en las operaciones en las que necesitemos de dos registros).
 
 Nosotros pondremos siempre el resultado de las operaciones en el mismo registro para simplificar lo que va a ocasionar que se vaya sobre escribiendo por lo que habra que ir viendo r al poner cada instrucción.
 
@@ -36,15 +36,15 @@ Nosotros pondremos siempre el resultado de las operaciones en el mismo registro 
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
-LCI 4 4 10000.. (00100 00100 00100 1 1000 0000 0000 0000) 0x21098000 (por el momento no anda hace un ANDI lo cargamos a mano momentaneamente)
+LCI 4 4 10000.. (00100 00100 00100 1 1000 0000 0000 0000) 0x21098000 
 ORI 5 5 100.. (00110 00101 00101 0 1000 0000 0000 0000) 0x314A8000
 ADD 4 5 8 (00000 00100 00101 01000 00000 0 001100) 0x010A800C
 SUB 4 5 8 (00000 00100 00101 01000 00000 0 001101) 0x010A800D
 MUL 4 5 8 (00000 00100 00101 01000 00000 0 011000) 0x010A8018
 MULH 4 5 9 (00000 00100 00101 01001 00000 0 011001) 0x010A9019
 MULHU 4 5 9 (00000 00100 00101 01001 00000 0 011010) 0x010A901A
-MULHSU 4 5 8 (00000 00100 00101 01000 00000 0 011011) 0x010A801B (NO ANDA DA IGUAL EN AMBOS)
-MULHSU 5 4 9 (00000 00101 00100 01001 00000 0 011011) 0x0148901B (NO ANDA DA IGUAL EN AMBOS)
+MULHSU 4 5 8 (00000 00100 00101 01000 00000 0 011011) 0x010A801B 
+MULHSU 5 4 9 (00000 00101 00100 01001 00000 0 011011) 0x0148901B 
 DIV 4 5 8 (00000 00100 00101 01000 00000 0 011100) 0x010A801C
 REST 4 5 9 (00000 00100 00101 01001 00000 0 011110) 0x010A901E
 DIVU 4 5 8 (00000 00100 00101 01000 00000 0 011101) 0x010A801D
@@ -61,7 +61,7 @@ Vemos también que por como se calcula la multiplicación binaria el procesador 
 
 Vemos el funcionamiento de unsigned y signed por ejemplo en la misma multiplicación donde al poner unsigned la parte mayor da 0x00004000 contra los 0xFFFFC000 queda al usar signed,esto tambien se ve en la division donde nos da 0xFFFF0000 en el signed y 0x0001000 en el unsigned.
 
-Para probar MULHSU lo que haremos es ver si detecta bien lo de poner unsigned un argumento para eso testearemos usando el registro 4 (con valor negativo) como el signed y luego como el unsigned a ver si el resultado cambia como deberia,vemos que por el momento no lo hace.
+Para probar MULHSU lo que haremos es ver si detecta bien lo de poner unsigned un argumento para eso testearemos usando el registro 4 (con valor negativo) como el signed y luego como el unsigned a ver si el resultado cambia como deberia,vemos lo hace ya que en el registro 8 nos quedo 0xFFFFC000 (lo que corresponde por ser 4 signed) y en el 9 nos quedo 0x00004000 (lo que corresponde por ser 4 unsigned).
 
 Vimos que el resto no da basura da 0 como debe dar en nuestro caso.
 
@@ -89,8 +89,8 @@ Usaremos los registros 4 y 5 para guardar la dirección del serie y la h.
 ```
 XOR 4 4 4 (00000 00100 00100 00100 00000 0 001010) 0x0108400A
 XOR 5 5 5 (00000 00101 00101 00101 00000 0 001010) 0x014A500A
-ADDI 4 4 0xFF00 (00011 00100 00100 1 1111111100000000) 0x1909FF00 (log bugeado instruccion anda bien)
-ADDI 5 5 0x0068 (00011 00101 00101 0 0000000001000100) 0x194A0068 (log bugeado instruccion anda bien)
+ADDI 4 4 0xFF00 (00011 00100 00100 1 1111111100000000) 0x1909FF00 
+ADDI 5 5 0x0068 (00011 00101 00101 0 0000000001000100) 0x194A0068 
 SB 4 5 0 (01011 00100 00101 0 00000000..00) 0x590A0000
 ```
 ## Postcondiciones
@@ -119,19 +119,23 @@ Para que se note el salto utilizaremos un salto de 4 instrucciones.
 
 ## Code
 ```
-BEQ 4 5 0x000F (10000 00100 00101 0 000...0100) 0x810A0004
-BNE 4 5 0x000F (10001 00100 00101 0 000...0100) 0x890A0004 (MAL SALTO)
-BLT 4 5 0x000F (10010 00100 00101 0 000...0100) 0x910A0004
-BGE 4 5 0x000F (10011 00100 00101 0 000...0100) 0x990A0004
-BLTU 4 5 0x000F (10100 00100 00101 0 000...0100) 0xA10A0004
-BGEU 4 5 0x000F (10101 00100 00101 0 000...0100) 0xA90A0004
+BEQ 4 5 0x0004 (10000 00100 00101 0 000...0100) 0x810A0004
+BNE 4 5 0x0004 (10001 00100 00101 0 000...0100) 0x890A0004
+BLT 4 5 0x0004 (10010 00100 00101 0 000...0100) 0x910A0004
+BGE 4 5 0x0004 (10011 00100 00101 0 000...0100) 0x990A0004
+BLTU 4 5 0x0004 (10100 00100 00101 0 000...0100) 0xA10A0004
+BGEU 4 5 0x0004 (10101 00100 00101 0 000...0100) 0xA90A0004
 ```
 
 ## Postcondiciones
 Si funciono en este caso se ve en la consola porque nos va a decir que saltamos al pc tanto y si vemos que avanzamos un pc nada más es que no aplicaba el salto.
 
 ## Conclusiones
-Vemos que en nuestro caso por como se calcula el salto deberia estar saltando 0x10 cada vez que deberia saltar,vemos que salta cuando debe,pero lo hace de forma erronea saltando de 0x04 a 0x80000010 en vez de a 0x018 como corresponderia.
+Vemos que en nuestro caso por como se calcula el salto deberia estar saltando 0x14 cada vez que deberia saltar (esto porque PC + 4 + (4*4) = PC + 0x14). Vemos en los distintos casos que el salto es realizado de forma correcta.Ej:
+
+PC: 0x0 -> 0x14
+
+PC: 0x04 -> 0x18
 
 Salta en BNE,BLT,BGEU lo cual corresponde por los valores en los registros.
 
@@ -214,16 +218,16 @@ Vamos a probar si las cuatro instrucciones de JUMP andan correctamente y el pc s
 ## Precondiciones
 Se recomienda empezar con el pc en 0 para una mejor visualización.
 
-Para las tipo I nostros usaremos el registro 15 en el cual vamos a guardar previamente el valor 0x4 osea que en los tipo I deberiamos saltar igual que en las J
+Para las tipo I nostros usaremos el registro 15 en el cual vamos a guardar previamente el valor 0x4 osea que en los tipo I deberiamos saltar igual que en las J.
+
 ## Code
 ```
-J 0x02 (00001 00 0...0010) 0x08000002 (NO SALTA DE FORMA CORRECTA)
-JAL 0x02 (00001 01 0...0010) 0x0A000002 (HACE UN J)
-JALX 0x02 (00001 100 0...0010) 0x0C000002 (HACE UN J)
+J 0x02 (00001 00 0...0010) 0x08000002 
+JAL 0x02 (00001 01 0...0010) 0x0A000002 
+JALX 0 0x02 (00001 100 0...0010) 0x0C000002 (Guarda siempre en el registro 3)
 JR 15 0x02 (00010 01111 00 00...0010) 0x13C00002 
-JALR 15 0x02 (00010 01111 01 00...010) 0x13D00002 (Hace un JR)
-JALR 15 0X02 (00010 01111 1 01 00...010) 0x13E80002 (Hace un JR)
-```
+JALR 15 0x02 (00010 01111 01 00...010) 0x13D00002
+JALRX 15 0X02 (00010 01111 1 01 00...010) 0x13E80002 (Guarda siempre en el registro 3)
 
 ## Postcondiciones
 Para ver si las tipo J funcionaron hay que ver si salta adonde debe,con ese salto que pusimos el pc debe saltar  a 0x0C
@@ -232,7 +236,20 @@ Y además al ejecutar los JAL se debe poder ver con r que el registro correspond
 Y en las tipo I lo mismo
 
 ## Conclusiones
-Vemos que JR funciona bien estemos en el pc que estemos vamos a saltar a 0x0C que es la suma entre 0x04 y la imagen extendida.
+Vemos que en J saltamos 0x0C cada vez ejemplo:
+
+PC: 0x0 -> 0x0C
+
+PC: 0x04 -> 0x10
+
+Esto coincide con la formula de PC + 4 + 4*2.
+
+Vemos que JAL hace los mismos saltos pero guardando en el registro 1 donde iba a saltar si no era por el salto.
+En PC 0x00 -> 0x04 y en PC 0x04 -> 0x08
+
+En JALX lo mismo pero guardando en el registro 3
+
+Vemos que JR funciona bien estemos en el pc que estemos vamos a saltar a 0x0C que es la suma entre 0x04 y la imagen extendida,JALR salta al mismo lugar y guarda en R1 adonde iba a saltar sino era por el salto,JALRX lo mismo guardando en el registro 3.
 
 # Caso 7
 
