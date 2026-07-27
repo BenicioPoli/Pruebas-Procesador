@@ -221,6 +221,7 @@ Se recomienda empezar con el pc en 0 para una mejor visualización.
 Para las tipo I nostros usaremos el registro 15 en el cual vamos a guardar previamente el valor 0x4 osea que en los tipo I deberiamos saltar igual que en las J.
 
 ## Code
+
 ```
 J 0x02 (00001 00 0...0010) 0x08000002 
 JAL 0x02 (00001 01 0...0010) 0x0A000002 
@@ -228,14 +229,17 @@ JALX 0 0x02 (00001 100 0...0010) 0x0C000002 (Guarda siempre en el registro 3)
 JR 15 0x02 (00010 01111 00 00...0010) 0x13C00002 
 JALR 15 0x02 (00010 01111 01 00...010) 0x13D00002
 JALRX 15 0X02 (00010 01111 1 01 00...010) 0x13E80002 (Guarda siempre en el registro 3)
+```
 
 ## Postcondiciones
+
 Para ver si las tipo J funcionaron hay que ver si salta adonde debe,con ese salto que pusimos el pc debe saltar  a 0x0C
 Y además al ejecutar los JAL se debe poder ver con r que el registro correspondiente guarde el valor del proximo pc
 
 Y en las tipo I lo mismo
 
 ## Conclusiones
+
 Vemos que en J saltamos 0x0C cada vez ejemplo:
 
 PC: 0x0 -> 0x0C
